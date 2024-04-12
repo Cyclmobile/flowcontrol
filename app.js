@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         (position) => {
           const { latitude, longitude } = position.coords;
           locationBuffer.push({ lat: latitude, lng: longitude });
-          if (locationBuffer.length > 5) locationBuffer.shift(); // keep the buffer size at 5
+          if (locationBuffer.length > 15) locationBuffer.shift(); // keep the buffer size at 5
 
           const averageCoords = locationBuffer.reduce(
             (acc, coords) => {
