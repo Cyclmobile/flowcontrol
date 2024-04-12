@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   const trafficLights = [
     {
-      name: "vestergade ut",
+      name: "Vestergade ut",
       coords: { lat: 55.64377466555561, lng: 9.645927939188951 },
     },
     {
@@ -18,22 +18,19 @@ document.addEventListener("DOMContentLoaded", function () {
   const otherLightsContainer = document.getElementById("other-lights");
 
   function updateUI(trafficLightsWithDistances) {
-    mainLightContainer.innerHTML = "";
-    otherLightsContainer.innerHTML = "";
+    mainLightContainer.innerHTML = ""; // Clear only once
+    otherLightsContainer.innerHTML = ""; // Clear only once
 
     trafficLightsWithDistances.forEach((light, index) => {
       const lightElement = document.createElement("div");
       lightElement.className =
         "traffic-light " + (index === 0 ? "main" : "smaller");
       lightElement.innerHTML = `
-                <div class="light" style="background-color: ${
-                  light.color
-                };"></div>
-                <div class="light-info">${light.name}: ${
+        <div class="light" style="background-color: ${light.color};"></div>
+        <div class="light-info">${light.name}: ${
         light.distance > 100 ? "--" : light.distance + " m"
       }</div>
-            `;
-
+      `;
       if (index === 0) {
         mainLightContainer.appendChild(lightElement);
       } else {
@@ -43,9 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function calculateDistance(coords1, coords2) {
-    function toRad(x) {
-      return (x * Math.PI) / 180;
-    }
+    const toRad = (x) => (x * Math.PI) / 180;
     const R = 6371e3; // Earth's radius in meters
     const dLat = toRad(coords2.lat - coords1.lat);
     const dLon = toRad(coords2.lng - coords1.lng);
@@ -64,8 +59,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function locateUser() {
     const options = {
       enableHighAccuracy: true,
-      maximumAge: 5000,
-      timeout: 5000,
+      maximumAge: 1000,
+      timeout: 2000,
     };
 
     if (navigator.geolocation) {
@@ -73,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         (position) => {
           const { latitude, longitude } = position.coords;
           locationBuffer.push({ lat: latitude, lng: longitude });
-          if (locationBuffer.length > 15) locationBuffer.shift(); // keep the buffer size at 5
+          if (locationBuffer.length > 5) locationBuffer.shift(); // Keep the buffer size at 5
 
           const averageCoords = locationBuffer.reduce(
             (acc, coords) => {
@@ -87,8 +82,14 @@ document.addEventListener("DOMContentLoaded", function () {
           averageCoords.lat /= locationBuffer.length;
           averageCoords.lng /= locationBuffer.length;
 
-          let lightsWithDistances = trafficLights.map((light) => {
-            const distance = calculateDistance(averageCoords, light.coords);
+          let lightsWithDistances = trafficLights.map((light) => ({
+            ...light,
+            distance: calculateDistance(averageCoords, light.coords),
+            color: "grey", // default color before assignment
+          }));
+
+          // Update colors based on distance
+          lightsWithDistances.forEach((light) => {
             const colors = {
               100: "green",
               50: "yellow",
@@ -97,14 +98,10 @@ document.addEventListener("DOMContentLoaded", function () {
               10: "green",
               0: "green",
             };
-            let color = "grey";
-            for (const [limit, c] of Object.entries(colors)) {
-              if (distance <= limit) {
-                color = c;
-                break;
-              }
-            }
-            return { ...light, distance, color };
+            const foundColor = Object.entries(colors).find(
+              ([limit]) => light.distance <= limit
+            );
+            light.color = foundColor ? foundColor[1] : "grey"; // Set 'grey' as default if no limit matches
           });
 
           // Sort by distance
@@ -122,5 +119,5 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   locateUser();
-  setInterval(locateUser, 3000); // Update location every 5 seconds
+  setInterval(locateUser, 2000); // Update location every 2 seconds
 });
