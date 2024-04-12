@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Modern Traffic Light Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #303030;
+            /* Dark gray background for modern feel */
+            color: #fff;
+            /* White text for contrast */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #main-light {
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #212121;
+            /* Slightly darker for main light area */
+            transition: background-color 0.5s;
+        }
+
+        #other-lights {
+            width: 100%;
+            height: 100px;
+            /* Fixed height for other lights */
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: #424242;
+            /* Lighter gray to differentiate from main light */
+            padding: 20px 0;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
+            /* Shadow for depth */
+        }
+
+        .light {
+            height: 250px;
+            /* Increased height for the main light */
+            width: 250px;
+            /* Increased width for the main light */
+            border-radius: 50%;
+            margin: 0 20px;
+            background-color: #757575;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .light.active {
+            background-color: #cddc39;
+            /* Lime green for active state */
+            box-shadow: 0 0 20px #cddc39;
+            /* Glowing effect */
+        }
+
+        .traffic-light {
+            font-size: 20px;
+            color: #fff;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .traffic-light:hover {
+            transform: scale(1.05);
+            /* Slight scale to indicate interaction */
+        }
+
+        @media (max-width: 600px) {
+            .light {
+                height: 80px;
+                width: 80px;
+            }
+
+            .traffic-light {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main-light">
+        <div class="traffic-light">
+            <div class="light active"></div>
+            <span>Main Light Active</span>
+        </div>
+    </div>
+    <div id="other-lights">
+        <div class="traffic-light">
+            <div class="light"></div>
+            <span>Light 1</span>
+        </div>
+        <div class="traffic-light">
+            <div class="light"></div>
+            <span>Light 2</span>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
