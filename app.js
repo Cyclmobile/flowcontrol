@@ -59,16 +59,36 @@ document.addEventListener("DOMContentLoaded", function () {
     return Math.round(R * c);
   }
 
+  let locationBuffer = [];
+
   function locateUser() {
+    const options = {
+      enableHighAccuracy: true,
+      maximumAge: 5000,
+      timeout: 5000,
+    };
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const userCoords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
+          const { latitude, longitude } = position.coords;
+          locationBuffer.push({ lat: latitude, lng: longitude });
+          if (locationBuffer.length > 5) locationBuffer.shift(); // keep the buffer size at 5
+
+          const averageCoords = locationBuffer.reduce(
+            (acc, coords) => {
+              acc.lat += coords.lat;
+              acc.lng += coords.lng;
+              return acc;
+            },
+            { lat: 0, lng: 0 }
+          );
+
+          averageCoords.lat /= locationBuffer.length;
+          averageCoords.lng /= locationBuffer.length;
+
           let lightsWithDistances = trafficLights.map((light) => {
-            const distance = calculateDistance(userCoords, light.coords);
+            const distance = calculateDistance(averageCoords, light.coords);
             const colors = {
               100: "green",
               50: "yellow",
@@ -93,7 +113,8 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         () => {
           alert("Geolocation is not supported by this browser.");
-        }
+        },
+        options
       );
     } else {
       alert("Geolocation is not supported by this browser.");
@@ -101,5 +122,5 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   locateUser();
-  setInterval(locateUser, 5000); // Update location every 5 seconds
+  setInterval(locateUser, 3000); // Update location every 5 seconds
 });
