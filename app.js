@@ -60,11 +60,11 @@ document.addEventListener("DOMContentLoaded", function () {
   function locateUser() {
     const options = {
       enableHighAccuracy: true,
-      timeout: 1000, // 5 seconds
+      timeout: 1000, // Reduced for faster updates
       maximumAge: 0,
     };
 
-    navigator.geolocation.getCurrentPosition(
+    const watcher = navigator.geolocation.watchPosition(
       (position) => {
         const userCoords = {
           lat: position.coords.latitude,
@@ -90,7 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
           return { ...light, distance, color };
         });
 
-        // Sort by distance
         lightsWithDistances.sort((a, b) => a.distance - b.distance);
         updateUI(lightsWithDistances);
       },
@@ -99,6 +98,9 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       options
     );
+
+    // Optional: Add a way to stop watching the position
+    // navigator.geolocation.clearWatch(watcher);
   }
 
   locateUser();
