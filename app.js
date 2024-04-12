@@ -43,9 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function calculateDistance(coords1, coords2) {
-    function toRad(x) {
-      return (x * Math.PI) / 180;
-    }
+    const toRad = (x) => (x * Math.PI) / 180;
     const R = 6371e3; // Earth's radius in meters
     const dLat = toRad(coords2.lat - coords1.lat);
     const dLon = toRad(coords2.lng - coords1.lng);
@@ -60,46 +58,48 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function locateUser() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userCoords = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          let lightsWithDistances = trafficLights.map((light) => {
-            const distance = calculateDistance(userCoords, light.coords);
-            const colors = {
-              100: "green",
-              50: "yellow",
-              30: "yellow",
-              20: "red",
-              10: "green",
-              0: "green",
-            };
-            let color = "grey";
-            for (const [limit, c] of Object.entries(colors)) {
-              if (distance <= limit) {
-                color = c;
-                break;
-              }
-            }
-            return { ...light, distance, color };
-          });
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000, // 5 seconds
+      maximumAge: 0,
+    };
 
-          // Sort by distance
-          lightsWithDistances.sort((a, b) => a.distance - b.distance);
-          updateUI(lightsWithDistances);
-        },
-        () => {
-          alert("Geolocation is not supported by this browser.");
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by this browser.");
-    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userCoords = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        let lightsWithDistances = trafficLights.map((light) => {
+          const distance = calculateDistance(userCoords, light.coords);
+          const colors = {
+            100: "green",
+            50: "yellow",
+            30: "yellow",
+            20: "red",
+            10: "green",
+            0: "green",
+          };
+          let color = "grey";
+          for (const [limit, c] of Object.entries(colors)) {
+            if (distance <= limit) {
+              color = c;
+              break;
+            }
+          }
+          return { ...light, distance, color };
+        });
+
+        // Sort by distance
+        lightsWithDistances.sort((a, b) => a.distance - b.distance);
+        updateUI(lightsWithDistances);
+      },
+      (error) => {
+        console.error("Error getting user location:", error);
+      },
+      options
+    );
   }
 
   locateUser();
-  setInterval(locateUser, 5000); // Update location every 5 seconds
 });
