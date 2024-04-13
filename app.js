@@ -2,18 +2,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const trafficLights = [
     {
       name: "Parkering 1",
-      coords: { lat: 55.643906108407066, lng: 9.646137350073912 },
-      radius: 5,
+      coords: { lat: 55.64386269220633, lng: 9.645867046922179 },
+      radius: 10,
     },
     {
       name: "Parkering 2",
       coords: { lat: 55.64390120211904, lng: 9.646164829071308 },
-      radius: 5,
+      radius: 10,
     },
     {
       name: "Parkering 3",
       coords: { lat: 55.643892485436, lng: 9.646238603465296 },
-      radius: 5,
+      radius: 10,
     },
   ];
 
