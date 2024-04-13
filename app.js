@@ -1,16 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
   const trafficLights = [
     {
-      name: "Vestergade ut",
-      coords: { lat: 55.64377466555561, lng: 9.645927939188951 },
+      name: "Parkering 1",
+      coords: { lat: 55.643906108407066, lng: 9.646137350073912 },
     },
     {
-      name: "Vestergade kryss",
-      coords: { lat: 55.643753474193936, lng: 9.645793828741228 },
+      name: "Parkering 2",
+      coords: { lat: 55.64390120211904, lng: 9.646164829071308 },
     },
     {
-      name: "Vestergade mot skole",
-      coords: { lat: 55.64263427495033, lng: 9.648590091598367 },
+      name: "Parkering 3",
+      coords: { lat: 55.643892485436, lng: 9.646238603465296 },
     },
   ];
 
