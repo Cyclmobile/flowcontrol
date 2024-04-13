@@ -3,14 +3,17 @@ document.addEventListener("DOMContentLoaded", function () {
     {
       name: "Parkering 1",
       coords: { lat: 55.643906108407066, lng: 9.646137350073912 },
+      radius: 5,
     },
     {
       name: "Parkering 2",
       coords: { lat: 55.64390120211904, lng: 9.646164829071308 },
+      radius: 5,
     },
     {
       name: "Parkering 3",
       coords: { lat: 55.643892485436, lng: 9.646238603465296 },
+      radius: 5,
     },
   ];
 
@@ -18,8 +21,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const otherLightsContainer = document.getElementById("other-lights");
 
   function updateUI(trafficLightsWithDistances) {
-    mainLightContainer.innerHTML = ""; // Clear only once
-    otherLightsContainer.innerHTML = ""; // Clear only once
+    mainLightContainer.innerHTML = "";
+    otherLightsContainer.innerHTML = "";
 
     trafficLightsWithDistances.forEach((light, index) => {
       const lightElement = document.createElement("div");
@@ -28,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
       lightElement.innerHTML = `
         <div class="light" style="background-color: ${light.color};"></div>
         <div class="light-info">${light.name}: ${
-        light.distance > 100 ? "--" : light.distance + " m"
+        light.isInside ? "Inside" : light.distance + " m"
       }</div>
       `;
       if (index === 0) {
@@ -41,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function calculateDistance(coords1, coords2) {
     const toRad = (x) => (x * Math.PI) / 180;
-    const R = 6371e3; // Earth's radius in meters
+    const R = 6371e3;
     const dLat = toRad(coords2.lat - coords1.lat);
     const dLon = toRad(coords2.lng - coords1.lng);
     const a =
@@ -54,13 +57,25 @@ document.addEventListener("DOMContentLoaded", function () {
     return Math.round(R * c);
   }
 
+  function getTrafficLightColor(distance, radius) {
+    if (distance < radius) {
+      return "red"; // Inside the radius
+    } else if (distance <= 100) {
+      return "yellow"; // Close
+    } else if (distance <= 300) {
+      return "red"; // Bit further away
+    } else {
+      return "grey"; // Very far
+    }
+  }
+
   let locationBuffer = [];
 
   function locateUser() {
     const options = {
       enableHighAccuracy: true,
       maximumAge: 1000,
-      timeout: 2000,
+      timeout: 1000,
     };
 
     if (navigator.geolocation) {
@@ -68,48 +83,33 @@ document.addEventListener("DOMContentLoaded", function () {
         (position) => {
           const { latitude, longitude } = position.coords;
           locationBuffer.push({ lat: latitude, lng: longitude });
-          if (locationBuffer.length > 5) locationBuffer.shift(); // Keep the buffer size at 5
+          if (locationBuffer.length > 5) locationBuffer.shift();
 
           const averageCoords = locationBuffer.reduce(
-            (acc, coords) => {
-              acc.lat += coords.lat;
-              acc.lng += coords.lng;
-              return acc;
-            },
+            (acc, coords) => ({
+              lat: acc.lat + coords.lat,
+              lng: acc.lng + coords.lng,
+            }),
             { lat: 0, lng: 0 }
           );
 
           averageCoords.lat /= locationBuffer.length;
           averageCoords.lng /= locationBuffer.length;
 
-          let lightsWithDistances = trafficLights.map((light) => ({
-            ...light,
-            distance: calculateDistance(averageCoords, light.coords),
-            color: "grey", // default color before assignment
-          }));
-
-          // Update colors based on distance
-          lightsWithDistances.forEach((light) => {
-            const colors = {
-              100: "green",
-              50: "yellow",
-              30: "yellow",
-              20: "red",
-              10: "green",
-              0: "green",
+          let lightsWithDistances = trafficLights.map((light) => {
+            const distance = calculateDistance(averageCoords, light.coords);
+            return {
+              ...light,
+              distance,
+              isInside: distance < light.radius,
+              color: getTrafficLightColor(distance, light.radius),
             };
-            const foundColor = Object.entries(colors).find(
-              ([limit]) => light.distance <= limit
-            );
-            light.color = foundColor ? foundColor[1] : "grey"; // Set 'grey' as default if no limit matches
           });
 
-          // Sort by distance
-          lightsWithDistances.sort((a, b) => a.distance - b.distance);
           updateUI(lightsWithDistances);
         },
         () => {
-          alert("Geolocation is not supported by this browser.");
+          // Handle location errors here
         },
         options
       );
@@ -119,5 +119,5 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   locateUser();
-  setInterval(locateUser, 2000); // Update location every 2 seconds
+  setInterval(locateUser, 1000);
 });
