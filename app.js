@@ -61,8 +61,15 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("floor-select")
     .addEventListener("change", function () {
       const floorNumber = parseInt(this.value, 10);
-      locateUserAndDisplay(floorNumber);
+      startLocationUpdates(floorNumber);
     });
+
+  function startLocationUpdates(floorNumber) {
+    locateUserAndDisplay(floorNumber); // Initial location fetch
+    setInterval(function () {
+      locateUserAndDisplay(floorNumber);
+    }, 2000); // Update location every 2 seconds
+  }
 
   function locateUserAndDisplay(floorNumber) {
     if (navigator.geolocation) {
@@ -95,7 +102,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateUI(areas) {
     const mainLightContainer = document.getElementById("main-light");
     const otherLightsContainer = document.getElementById("other-lights");
-
     mainLightContainer.innerHTML = "";
     otherLightsContainer.innerHTML = "";
 
@@ -104,10 +110,8 @@ document.addEventListener("DOMContentLoaded", function () {
       lightElement.className =
         "traffic-light " + (index === 0 ? "main" : "smaller");
       const colorAndStatus = getColorAndStatus(area.distance, area.radius);
-      lightElement.innerHTML = `
-        <div class="light" style="background-color: ${colorAndStatus.color};"></div>
-        <span>${area.name}: ${colorAndStatus.status}</span>
-      `;
+      lightElement.innerHTML = `<div class="light" style="background-color: ${colorAndStatus.color};"></div>
+                                      <span>${area.name}: ${colorAndStatus.status}</span>`;
       if (index === 0) {
         mainLightContainer.appendChild(lightElement);
       } else {
@@ -140,10 +144,8 @@ document.addEventListener("DOMContentLoaded", function () {
       Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
     return R * c; // Distance in meters
   }
 
-  // Initialize display for the default floor when the page loads
-  locateUserAndDisplay(1);
+  startLocationUpdates(1); // Initialize with the default floor when the page loads
 });

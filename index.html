@@ -9,10 +9,8 @@
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: #303030;
-            /* Dark gray background for modern feel */
+            background-color: #202020;
             color: #fff;
-            /* White text for contrast */
             margin: 0;
             padding: 0;
             display: flex;
@@ -22,38 +20,35 @@
             overflow: hidden;
         }
 
-        #main-light {
+        select {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #424242;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+        }
+
+        #main-light,
+        #other-lights {
             width: 100%;
-            flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #212121;
-            /* Slightly darker for main light area */
-            transition: background-color 0.5s;
         }
 
-        #other-lights {
-            width: 100%;
-            height: 100px;
-            /* Fixed height for other lights */
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background-color: #424242;
-            /* Lighter gray to differentiate from main light */
-            padding: 20px 0;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
-            /* Shadow for depth */
+        #main-light {
+            flex-grow: 1;
+            background-color: #303030;
         }
 
-        .light {
-            height: 250px;
-            /* Increased height for the main light */
-            width: 250px;
-            /* Increased width for the main light */
+        #main-light .light {
+            width: 300px;
+            height: 300px;
             border-radius: 50%;
-            margin: 0 20px;
             background-color: #757575;
             display: flex;
             justify-content: center;
@@ -61,33 +56,53 @@
             transition: all 0.3s ease;
         }
 
-        .light.active {
-            background-color: #cddc39;
-            /* Lime green for active state */
-            box-shadow: 0 0 20px #cddc39;
-            /* Glowing effect */
+
+        #other-lights {
+            height: 120px;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0;
+            background-color: #2C2C2C;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #other-lights .light {
+            min-width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 10px;
+            background-color: #757575;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .traffic-light {
-            font-size: 20px;
-            color: #fff;
-            text-align: center;
-            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 16px;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
         .traffic-light:hover {
-            transform: scale(1.05);
-            /* Slight scale to indicate interaction */
+            transform: scale(1.1);
         }
 
         @media (max-width: 600px) {
-            .light {
-                height: 80px;
-                width: 80px;
+            #main-light .light {
+                width: 150px;
+                height: 150px;
+            }
+
+            .light.active {
+                box-shadow: 0 0 15px rgba(205, 220, 57, 0.75);
             }
 
             .traffic-light {
-                font-size: 16px;
+                font-size: 14px;
             }
         }
     </style>
@@ -98,7 +113,6 @@
         <option value="1">Floor 1</option>
         <option value="2">Floor 2</option>
     </select>
-
     <div id="main-light">
         <div class="traffic-light">
             <div class="light active"></div>
@@ -106,14 +120,7 @@
         </div>
     </div>
     <div id="other-lights">
-        <div class="traffic-light">
-            <div class="light"></div>
-            <span>Light 1</span>
-        </div>
-        <div class="traffic-light">
-            <div class="light"></div>
-            <span>Light 2</span>
-        </div>
+        <!-- Additional lights will be dynamically added here -->
     </div>
     <script src="app.js"></script>
 </body>
