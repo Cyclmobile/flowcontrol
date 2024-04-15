@@ -4,124 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Modern Traffic Light Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #202020;
-            color: #fff;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        select {
-            margin: 20px 0;
-            padding: 10px;
-            background-color: #424242;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-family: 'Montserrat', sans-serif;
-            cursor: pointer;
-        }
-
-        #main-light,
-        #other-lights {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #main-light {
-            flex-grow: 1;
-            background-color: #303030;
-        }
-
-        #main-light .light {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background-color: #757575;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-
-        #other-lights {
-            height: 120px;
-            overflow-x: auto;
-            white-space: nowrap;
-            padding: 10px 0;
-            background-color: #2C2C2C;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            -webkit-overflow-scrolling: touch;
-        }
-
-        #other-lights .light {
-            min-width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 10px;
-            background-color: #757575;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .traffic-light {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 16px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .traffic-light:hover {
-            transform: scale(1.1);
-        }
-
-        @media (max-width: 600px) {
-            #main-light .light {
-                width: 150px;
-                height: 150px;
-            }
-
-            .light.active {
-                box-shadow: 0 0 15px rgba(205, 220, 57, 0.75);
-            }
-
-            .traffic-light {
-                font-size: 14px;
-            }
-        }
-    </style>
+    <title>Find your way</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <select id="floor-select">
-        <option value="1">Floor 1</option>
-        <option value="2">Floor 2</option>
-    </select>
-    <div id="main-light">
-        <div class="traffic-light">
-            <div class="light active"></div>
-            <span>Main Light Active</span>
+    <header class="app-header">
+        <h1 class="app-title">Find your way</h1>
+        <select id="floor-select" class="floor-selector">
+            <option value="1">Floor 1</option>
+            <option value="2">Floor 2</option>
+        </select>
+    </header>
+    <main class="app-content">
+        <div id="main-light" class="traffic-light-container">
+            <!-- Main traffic light will be dynamically added here -->
         </div>
-    </div>
-    <div id="other-lights">
-        <!-- Additional lights will be dynamically added here -->
-    </div>
+        <div id="other-lights" class="other-lights-container">
+            <!-- Additional lights will be dynamically added here -->
+        </div>
+    </main>
     <script src="app.js"></script>
 </body>
 
