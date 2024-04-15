@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
 
   let locationUpdateInterval;
-  const updateInterval = 500; // update location every 5 mili seconds
+  const updateInterval = 500; // update location every 500 milliseconds
 
   function startLocationUpdates(floorNumber) {
     // Clear existing interval
@@ -84,7 +84,6 @@ document.addEventListener("DOMContentLoaded", function () {
             lng: position.coords.longitude,
           };
           updateUIForFloor(userCoords, floorNumber);
-          console.log(position);
         },
         () => {
           alert("Unable to access your location.");
@@ -118,24 +117,40 @@ document.addEventListener("DOMContentLoaded", function () {
       const colorAndStatus = getColorAndStatus(area.distance, area.radius);
       lightElement.innerHTML = `<div class="light" style="background-color: ${colorAndStatus.color};"></div>
                                       <span>${area.name}: ${colorAndStatus.status}</span>`;
+
       if (index === 0) {
         mainLightContainer.appendChild(lightElement);
       } else {
         otherLightsContainer.appendChild(lightElement);
+        lightElement.addEventListener("click", function () {
+          swapWithMainLight(index);
+        });
       }
     });
   }
 
+  function swapWithMainLight(clickedIndex) {
+    const floorNumber = parseInt(
+      document.getElementById("floor-select").value,
+      10
+    );
+    const floorData = floorsData.find((floor) => floor.floor === floorNumber);
+    const temp = floorData.areas[0]; // Store main light data
+    floorData.areas[0] = floorData.areas[clickedIndex]; // Move clicked to main
+    floorData.areas[clickedIndex] = temp; // Move old main to clicked position
+
+    updateUIForFloor({ lat: 0, lng: 0 }, floorNumber); // Re-render UI with dummy coordinates
+  }
+
   function getColorAndStatus(distance, radius) {
-    const roundedDistance = Math.round(distance);
     if (distance < radius) {
-      return { color: "green", status: "very Close or Inside" };
+      return { color: "green", status: "Very Close or Inside" };
     } else if (distance <= 20) {
-      return { color: "yellow", status: `Close (${roundedDistance} M)` };
+      return { color: "yellow", status: `Close (${Math.round(distance)} M)` };
     } else if (distance <= 300) {
-      return { color: "red", status: `Nearby (${roundedDistance} M)` };
+      return { color: "red", status: `Nearby (${Math.round(distance)} M)` };
     } else {
-      return { color: "grey", status: `Far (${roundedDistance} M)` };
+      return { color: "grey", status: `Far (${Math.round(distance)} M)` };
     }
   }
 
@@ -157,8 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("floor-select")
     .addEventListener("change", function () {
-      const floorNumber = parseInt(this.value, 10);
-      startLocationUpdates(floorNumber);
+      startLocationUpdates(parseInt(this.value, 10));
     });
 
   startLocationUpdates(1); // Initialize updates for the default floor when the page loads
