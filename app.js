@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
 
   let locationUpdateInterval;
-  const updateInterval = 2000; // update location every 10 seconds
+  const updateInterval = 800; // update location every 8 mili seconds
 
   function startLocationUpdates(floorNumber) {
     // Clear existing interval
@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
             lng: position.coords.longitude,
           };
           updateUIForFloor(userCoords, floorNumber);
+          console.log(position);
         },
         () => {
           alert("Unable to access your location.");
