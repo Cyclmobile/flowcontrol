@@ -48,10 +48,10 @@ html {
 
 .traffic-light-container,
 .other-lights-container {
-  width: 100%;
+  width: 30%;
   max-width: 600px;
   display: flex;
-  justify-content: center;
+  justify-content: center; /* Ensures centering of all child elements including #main-light */
   position: relative;
   margin: 10px 0;
 }
@@ -60,11 +60,13 @@ html {
   width: 300px; /* Fixed width for consistency */
   height: 300px; /* Fixed height for consistency */
   border-radius: 50%;
+  justify-content: center; /* This will center the child elements horizontally */
   background-color: #757575;
   display: flex;
   justify-content: center;
   align-items: center;
   transition: all 0.3s ease;
+  width: 100%; /* Ensure it takes full width if not already set */
 }
 
 .other-lights-container {
