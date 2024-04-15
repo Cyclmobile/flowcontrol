@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
 
   let locationUpdateInterval;
-  const updateInterval = 800; // update location every 8 mili seconds
+  const updateInterval = 500; // update location every 5 mili seconds
 
   function startLocationUpdates(floorNumber) {
     // Clear existing interval
