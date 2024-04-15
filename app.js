@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         {
           name: "Narvesen",
-          coords: { lat: 55.64390120211904, lng: 9.646164829071308 },
+          coords: { lat: 55.643885756429, lng: 9.64596087440077 },
           radius: 14,
         },
         {
@@ -39,7 +39,17 @@ document.addEventListener("DOMContentLoaded", function () {
           radius: 14,
         },
         {
-          name: "Others 2nd Floor",
+          name: "Jysk",
+          coords: { lat: 55.643892485436, lng: 9.646238603465296 },
+          radius: 14,
+        },
+        {
+          name: "Mcdonalds",
+          coords: { lat: 55.643892485436, lng: 9.646238603465296 },
+          radius: 14,
+        },
+        {
+          name: "Burger King",
           coords: { lat: 55.643892485436, lng: 9.646238603465296 },
           radius: 14,
         },
@@ -107,14 +117,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getColorAndStatus(distance, radius) {
+    const roundedDistance = Math.round(distance); // Round the distance to the nearest whole number
     if (distance < radius) {
-      return { color: "green", status: "Inside" };
-    } else if (distance <= 100) {
-      return { color: "yellow", status: "Nearby" };
+      return { color: "green", status: "very Close or Inside" };
+    } else if (distance <= 20) {
+      return { color: "yellow", status: `Close (${roundedDistance} M)` };
     } else if (distance <= 300) {
-      return { color: "red", status: "Close" };
+      return { color: "red", status: `Nearby (${roundedDistance} M)` };
     } else {
-      return { color: "grey", status: "Far" };
+      return { color: "grey", status: `Far (${roundedDistance} M)` };
     }
   }
 
