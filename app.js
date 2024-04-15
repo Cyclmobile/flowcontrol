@@ -57,18 +57,22 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   ];
 
-  document
-    .getElementById("floor-select")
-    .addEventListener("change", function () {
-      const floorNumber = parseInt(this.value, 10);
-      startLocationUpdates(floorNumber);
-    });
+  let locationUpdateInterval;
+  const updateInterval = 2000; // update location every 10 seconds
 
   function startLocationUpdates(floorNumber) {
-    locateUserAndDisplay(floorNumber); // Initial location fetch
-    setInterval(function () {
+    // Clear existing interval
+    if (locationUpdateInterval) {
+      clearInterval(locationUpdateInterval);
+    }
+
+    // Fetch and display the initial location for the new floor immediately
+    locateUserAndDisplay(floorNumber);
+
+    // Set up a new interval for the new floor
+    locationUpdateInterval = setInterval(function () {
       locateUserAndDisplay(floorNumber);
-    }, 2000); // Update location every 2 seconds
+    }, updateInterval);
   }
 
   function locateUserAndDisplay(floorNumber) {
@@ -83,7 +87,8 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         () => {
           alert("Unable to access your location.");
-        }
+        },
+        { enableHighAccuracy: true }
       );
     } else {
       alert("Geolocation is not supported by this browser.");
@@ -121,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function getColorAndStatus(distance, radius) {
-    const roundedDistance = Math.round(distance); // Round the distance to the nearest whole number
+    const roundedDistance = Math.round(distance);
     if (distance < radius) {
       return { color: "green", status: "very Close or Inside" };
     } else if (distance <= 20) {
@@ -144,8 +149,16 @@ document.addEventListener("DOMContentLoaded", function () {
       Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
       Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in meters
+    return R * c;
   }
 
-  startLocationUpdates(1); // Initialize with the default floor when the page loads
+  // Set up floor change listener and initial update
+  document
+    .getElementById("floor-select")
+    .addEventListener("change", function () {
+      const floorNumber = parseInt(this.value, 10);
+      startLocationUpdates(floorNumber);
+    });
+
+  startLocationUpdates(1); // Initialize updates for the default floor when the page loads
 });
