@@ -1,8 +1,14 @@
 /* Stylesheet for Ultra Modern Traffic Light Tracker */
+:root {
+  --primary-color: #20232a;
+  --secondary-color: #282c34;
+  --accent-color: #61dafb;
+  --text-color: #ffffff;
+}
 body,
 html {
   font-family: "Montserrat", sans-serif;
-  background-color: #121212;
+  background-color: #20232a;
   color: #e0e0e0;
   margin: 0;
   padding: 0;
