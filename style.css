@@ -80,7 +80,7 @@ html {
   display: flex;
   justify-content: start; /* Align items to the start */
   overflow-x: auto; /* Allow horizontal scrolling */
-  background-color: #262626;
+  background-color: #282c34;
   padding: 10px 0;
 }
 
