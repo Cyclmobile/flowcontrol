@@ -110,17 +110,22 @@ document.addEventListener("DOMContentLoaded", function () {
     mainLightContainer.innerHTML = "";
     otherLightsContainer.innerHTML = "";
 
+    // Sort areas based on distance in ascending order
+    areas.sort((a, b) => a.distance - b.distance);
+
     areas.forEach((area, index) => {
       const lightElement = document.createElement("div");
       lightElement.className =
         "traffic-light " + (index === 0 ? "main" : "smaller");
       const colorAndStatus = getColorAndStatus(area.distance, area.radius);
       lightElement.innerHTML = `<div class="light" style="background-color: ${colorAndStatus.color};"></div>
-                                      <span>${area.name}: ${colorAndStatus.status}</span>`;
+                                          <span>${area.name}: ${colorAndStatus.status}</span>`;
 
       if (index === 0) {
         mainLightContainer.appendChild(lightElement);
       } else {
+        // Always append the lights to the right
+        lightElement.style.order = index;
         otherLightsContainer.appendChild(lightElement);
         lightElement.addEventListener("click", function () {
           swapWithMainLight(index);
@@ -129,18 +134,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function swapWithMainLight(clickedIndex) {
-    const floorNumber = parseInt(
-      document.getElementById("floor-select").value,
-      10
-    );
-    const floorData = floorsData.find((floor) => floor.floor === floorNumber);
-    const temp = floorData.areas[0]; // Store main light data
-    floorData.areas[0] = floorData.areas[clickedIndex]; // Move clicked to main
-    floorData.areas[clickedIndex] = temp; // Move old main to clicked position
+  // function swapWithMainLight(clickedIndex) {
+  //   const floorNumber = parseInt(
+  //     document.getElementById("floor-select").value,
+  //     10
+  //   );
+  //   const floorData = floorsData.find((floor) => floor.floor === floorNumber);
+  //   const temp = floorData.areas[0]; // Store main light data
+  //   floorData.areas[0] = floorData.areas[clickedIndex]; // Move clicked to main
+  //   floorData.areas[clickedIndex] = temp; // Move old main to clicked position
 
-    updateUIForFloor({ lat: 0, lng: 0 }, floorNumber); // Re-render UI with dummy coordinates
-  }
+  //   updateUIForFloor({ lat: 0, lng: 0 }, floorNumber); // Re-render UI with dummy coordinates
+  // }
 
   function getColorAndStatus(distance, radius) {
     if (distance < radius) {
