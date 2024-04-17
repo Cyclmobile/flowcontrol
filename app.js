@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
           areas: [
             {
               name: "Vestergate skolebakken kryss",
-              coords: { lat: 55.643983861371815, lng: 9.644355296658622 },
+              coords: { lat: 55.6438022332892, lng: 9.645921707177573 },
               radius: 14,
             },
             // Add more areas for company1 if needed
