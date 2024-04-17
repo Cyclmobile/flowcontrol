@@ -6,6 +6,229 @@ document.addEventListener("DOMContentLoaded", function () {
   let locationUpdateInterval;
   const updateInterval = 500; // update location every 500 milliseconds
 
+  // Define floorsData including extra companies, minimum 2 floors, and at least 2 areas on second floors
+  const floorsData = [
+    {
+      companyId: "company1",
+      floorsData: [
+        {
+          floor: 1,
+          areas: [
+            {
+              name: "Vestergate skolebakken kryss",
+              coords: { lat: 55.643983861371815, lng: 9.644355296658622 },
+              radius: 14,
+            },
+            // Add more areas for company1 if needed
+            {
+              name: "Example Area 2",
+              coords: { lat: 55.642, lng: 9.646 },
+              radius: 15,
+            },
+            {
+              name: "Example Area 3",
+              coords: { lat: 55.641, lng: 9.644 },
+              radius: 18,
+            },
+          ],
+        },
+        {
+          floor: 2,
+          areas: [
+            {
+              name: "Second Floor Area 1 vestergade",
+              coords: { lat: 55.644, lng: 9.642 },
+              radius: 20,
+            },
+            // Add more areas for the second floor of company1 if needed
+            {
+              name: "Second Floor Area 2 vestergade",
+              coords: { lat: 55.648, lng: 9.643 },
+              radius: 16,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      companyId: "company2",
+      floorsData: [
+        {
+          floor: 1,
+          areas: [
+            {
+              name: "SøderGade",
+              coords: { lat: 55.64128357762472, lng: 9.646158041216147 },
+              radius: 14,
+            },
+            // Add more areas for company2 if needed
+            {
+              name: "Example Area 2",
+              coords: { lat: 55.642, lng: 9.646 },
+              radius: 15,
+            },
+            {
+              name: "Example Area 3",
+              coords: { lat: 55.641, lng: 9.644 },
+              radius: 18,
+            },
+          ],
+        },
+        {
+          floor: 2,
+          areas: [
+            {
+              name: "Second Floor Area 1",
+              coords: { lat: 55.644, lng: 9.642 },
+              radius: 20,
+            },
+            // Add more areas for the second floor of company2 if needed
+            {
+              name: "Second Floor Area 2",
+              coords: { lat: 55.645, lng: 9.643 },
+              radius: 16,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      companyId: "company3",
+      floorsData: [
+        {
+          floor: 1,
+          areas: [
+            {
+              name: "Example Area 1",
+              coords: { lat: 55.643, lng: 9.645 },
+              radius: 20,
+            },
+            // Add more areas for company3 if needed
+            {
+              name: "Example Area 2",
+              coords: { lat: 55.642, lng: 9.646 },
+              radius: 15,
+            },
+          ],
+        },
+        {
+          floor: 2,
+          areas: [
+            {
+              name: "Second Floor Area 1",
+              coords: { lat: 55.644, lng: 9.642 },
+              radius: 20,
+            },
+            // Add more areas for the second floor of company3 if needed
+            {
+              name: "Second Floor Area 2",
+              coords: { lat: 55.645, lng: 9.643 },
+              radius: 18,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      companyId: "company4",
+      floorsData: [
+        {
+          floor: 1,
+          areas: [
+            {
+              name: "Another Example Area",
+              coords: { lat: 55.645, lng: 9.648 },
+              radius: 18,
+            },
+            // Add more areas for company4 if needed
+            {
+              name: "Yet Another Example Area",
+              coords: { lat: 55.644, lng: 9.647 },
+              radius: 16,
+            },
+          ],
+        },
+        {
+          floor: 2,
+          areas: [
+            {
+              name: "Second Floor Area 1",
+              coords: { lat: 55.644, lng: 9.642 },
+              radius: 20,
+            },
+            // Add more areas for the second floor of company4 if needed
+            {
+              name: "Second Floor Area 2",
+              coords: { lat: 55.645, lng: 9.643 },
+              radius: 18,
+            },
+          ],
+        },
+      ],
+    },
+    // Add more companies as examples
+  ];
+
+  // Write floorsData to Firestore
+  function writeFloorsDataToFirestore() {
+    floorsData.forEach((company) => {
+      db.collection("companies")
+        .doc(company.companyId)
+        .set(company)
+        .then(() => {
+          console.log("Company data successfully written!");
+        })
+        .catch((error) => {
+          console.error("Error writing company data: ", error);
+        });
+    });
+  }
+
+  // Function to fetch floorsData for the closest company and start location updates
+  function fetchClosestCompanyAndStartUpdates() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userCoords = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          db.collection("companies")
+            .get()
+            .then((querySnapshot) => {
+              let closestCompany;
+              let closestDistance = Infinity;
+              querySnapshot.forEach((doc) => {
+                const companyData = doc.data();
+                if (companyData && companyData.floorsData) {
+                  const companyCoords =
+                    companyData.floorsData[0].areas[0].coords; // Assuming the first area's coordinates represent the company's location
+                  const distance = calculateDistance(userCoords, companyCoords);
+                  if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestCompany = companyData;
+                  }
+                }
+              });
+              if (closestCompany) {
+                populateFloorDropdown(closestCompany.floorsData);
+                startLocationUpdates(closestCompany.floorsData[0].floor); // Start updates for the first floor of the closest company
+              }
+            })
+            .catch((error) => {
+              console.log("Error getting documents: ", error);
+            });
+        },
+        () => {
+          alert("Unable to access your location.");
+        },
+        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+      );
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }
+
   // Fetch floorsData from Firestore for all companies and start location updates
   function fetchFloorsDataAndStartUpdates() {
     db.collection("companies")
@@ -13,8 +236,10 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((querySnapshot) => {
         let allFloorsData = [];
         querySnapshot.forEach((doc) => {
-          const floorsData = doc.data().floorsData;
-          allFloorsData = allFloorsData.concat(floorsData); // Aggregate floors from all companies
+          const companyData = doc.data();
+          if (companyData && companyData.floorsData) {
+            allFloorsData = allFloorsData.concat(companyData.floorsData); // Aggregate floors from all companies
+          }
         });
         populateFloorDropdown(allFloorsData);
         if (allFloorsData.length > 0) {
@@ -35,7 +260,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const uniqueFloors = new Set();
 
     floorsData.forEach((floorData) => {
-      uniqueFloors.add(floorData.floor); // Add floor number to the Set
+      if (floorData.floor) {
+        uniqueFloors.add(floorData.floor); // Add floor number to the Set
+      }
     });
 
     // Create dropdown options from the unique floor numbers
@@ -92,12 +319,15 @@ document.addEventListener("DOMContentLoaded", function () {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          const companyFloorsData = doc.data().floorsData;
-          const floorData = companyFloorsData.find(
-            (floor) => floor.floor === floorNumber
-          );
-          if (floorData) {
-            floorsData.push(floorData);
+          const companyData = doc.data();
+          if (companyData && companyData.floorsData) {
+            const companyFloorsData = companyData.floorsData;
+            const floorData = companyFloorsData.find(
+              (floor) => floor.floor === floorNumber
+            );
+            if (floorData) {
+              floorsData.push(floorData);
+            }
           }
         });
         const areasWithDistance = floorsData[0].areas.map((area) => ({
@@ -153,9 +383,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function calculateDistance(coords1, coords2) {
     const R = 6371e3; // meters
     const φ1 = (coords1.lat * Math.PI) / 180;
-    const φ2 = (coords2.latitude * Math.PI) / 180;
-    const Δφ = ((coords2.latitude - coords1.lat) * Math.PI) / 180;
-    const Δλ = ((coords2.longitude - coords1.lng) * Math.PI) / 180;
+    const φ2 = (coords2.lat * Math.PI) / 180;
+    const Δφ = ((coords2.lat - coords1.lat) * Math.PI) / 180;
+    const Δλ = ((coords2.lng - coords1.lng) * Math.PI) / 180;
 
     const a =
       Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
@@ -177,6 +407,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Initialize updates for the default floor when the page loads
-  fetchFloorsDataAndStartUpdates();
+  // Write floorsData to Firestore when the document is loaded
+  writeFloorsDataToFirestore();
+
+  // Initialize updates for the closest company when the page loads
+  fetchClosestCompanyAndStartUpdates();
 });
