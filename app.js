@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", function () {
   // Define floorsData including extra companies, minimum 2 floors, and at least 2 areas on second floors
   const floorsData = [
     {
-      companyId: "CHP Airport",
+      companyId: "company1",
       floorsData: [
         {
           floor: 1,
           areas: [
             {
-              name: "Vestergate skolebakken kryss",
+              name: "Vestergate",
               coords: { lat: 55.6438022332892, lng: 9.645921707177573 },
               radius: 14,
             },
@@ -23,12 +23,12 @@ document.addEventListener("DOMContentLoaded", function () {
             {
               name: "Example Area 2",
               coords: { lat: 55.642, lng: 9.646 },
-              radius: 14,
+              radius: 15,
             },
             {
               name: "Example Area 3",
-              coords: { lat: 55.64394730907954, lng: 9.6459480488367 },
-              radius: 14,
+              coords: { lat: 55.641, lng: 9.644 },
+              radius: 18,
             },
           ],
         },
@@ -36,13 +36,13 @@ document.addEventListener("DOMContentLoaded", function () {
           floor: 2,
           areas: [
             {
-              name: "Second Floor Area 1 vestergade",
+              name: "Second Floor Area 1 hoes",
               coords: { lat: 55.644, lng: 9.642 },
               radius: 20,
             },
             // Add more areas for the second floor of company1 if needed
             {
-              name: "Second Floor Area 2 vestergade",
+              name: "Second Floor Area 2",
               coords: { lat: 55.648, lng: 9.643 },
               radius: 16,
             },
@@ -58,19 +58,19 @@ document.addEventListener("DOMContentLoaded", function () {
           areas: [
             {
               name: "SøderGade",
-              coords: { lat: 55.64450782605482, lng: 9.644619336942808 },
+              coords: { lat: 55.64128357762472, lng: 9.646158041216147 },
               radius: 14,
             },
             // Add more areas for company2 if needed
             {
               name: "Example Area 2",
-              coords: { lat: 55.64452480879658, lng: 9.644167457387036 },
-              radius: 14,
+              coords: { lat: 55.642, lng: 9.646 },
+              radius: 15,
             },
             {
               name: "Example Area 3",
-              coords: { lat: 55.64475488129017, lng: 9.64444640712184 },
-              radius: 14,
+              coords: { lat: 55.641, lng: 9.644 },
+              radius: 18,
             },
           ],
         },
@@ -79,14 +79,14 @@ document.addEventListener("DOMContentLoaded", function () {
           areas: [
             {
               name: "Second Floor Area 1",
-              coords: { lat: 55.64473066319659, lng: 9.644918475903818 },
-              radius: 14,
+              coords: { lat: 55.644, lng: 9.642 },
+              radius: 20,
             },
             // Add more areas for the second floor of company2 if needed
             {
               name: "Second Floor Area 2",
-              coords: { lat: 55.64516053213807, lng: 9.645165239131076 },
-              radius: 14,
+              coords: { lat: 55.645, lng: 9.643 },
+              radius: 16,
             },
           ],
         },
@@ -202,20 +202,25 @@ document.addEventListener("DOMContentLoaded", function () {
               querySnapshot.forEach((doc) => {
                 const companyData = doc.data();
                 if (companyData && companyData.floorsData) {
-                  const companyCoords =
-                    companyData.floorsData[0].areas[0].coords; // Assuming the first area's coordinates represent the company's location
-                  const distance = calculateDistance(userCoords, companyCoords);
-                  if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestCompany = companyData;
-                  }
+                  companyData.floorsData.forEach((floorData) => {
+                    floorData.areas.forEach((area) => {
+                      const distance = calculateDistance(
+                        userCoords,
+                        area.coords
+                      );
+                      if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestCompany = companyData;
+                        document.getElementById("company-id").textContent =
+                          closestCompany.companyId; // Set the companyId in the header
+                      }
+                    });
+                  });
                 }
               });
               if (closestCompany) {
                 populateFloorDropdown(closestCompany.floorsData);
                 startLocationUpdates(closestCompany.floorsData[0].floor); // Start updates for the first floor of the closest company
-                document.getElementById("company-id").textContent =
-                  closestCompany.companyId; // Set the companyId in the header
               }
             })
             .catch((error) => {
@@ -316,31 +321,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to update UI for the selected floor
   function updateUIForFloor(userCoords, floorNumber) {
-    const floorsData = []; // Define an empty array to store fetched floorsData
-
+    const companyId = getSelectedCompanyId(); // Get the selected companyId dynamically
+    // Fetch floorsData for the selected floor and company
     db.collection("companies")
+      .doc(companyId)
       .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
+      .then((doc) => {
+        if (doc.exists) {
           const companyData = doc.data();
           if (companyData && companyData.floorsData) {
-            const companyFloorsData = companyData.floorsData;
-            const floorData = companyFloorsData.find(
-              (floor) => floor.floor === floorNumber
+            const selectedFloorData = companyData.floorsData.find(
+              (floorData) => floorData.floor === floorNumber
             );
-            if (floorData) {
-              floorsData.push(floorData);
+            if (selectedFloorData) {
+              const areasWithDistance = selectedFloorData.areas.map((area) => ({
+                ...area,
+                distance: calculateDistance(userCoords, area.coords),
+              }));
+              updateUI(areasWithDistance);
+            } else {
+              console.log("Floor data not found for the selected floor.");
             }
+          } else {
+            console.log("No floors data available for the company.");
           }
-        });
-        const areasWithDistance = floorsData[0].areas.map((area) => ({
-          ...area,
-          distance: calculateDistance(userCoords, area.coords),
-        }));
-        updateUI(areasWithDistance);
+        } else {
+          console.log("Company document not found.");
+        }
       })
       .catch((error) => {
-        console.log("Error getting documents: ", error);
+        console.log("Error getting company document:", error);
       });
   }
 
@@ -401,13 +411,22 @@ document.addEventListener("DOMContentLoaded", function () {
   function getColorAndStatus(distance, radius) {
     if (distance < radius) {
       return { color: "green", status: "Very Close or Inside" };
-    } else if (distance <= 30) {
+    } else if (distance <= 20) {
       return { color: "yellow", status: `Close (${Math.round(distance)} M)` };
     } else if (distance <= 300) {
       return { color: "red", status: `Nearby (${Math.round(distance)} M)` };
     } else {
       return { color: "grey", status: `Far (${Math.round(distance)} M)` };
     }
+  }
+
+  // Function to get the selected companyId dynamically based on the selected floor
+  function getSelectedCompanyId() {
+    const floorSelect = document.getElementById("floor-select");
+    const selectedFloor = parseInt(floorSelect.value, 10);
+    // Implement your logic to get the companyId based on the selected floor
+    // For now, returning a default value
+    return "company1";
   }
 
   // Write floorsData to Firestore when the document is loaded
