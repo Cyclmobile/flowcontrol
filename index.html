@@ -11,11 +11,11 @@
 
 <body>
     <header class="app-header">
-        <h1 class="app-title">Find Your Way</h1>
+        <h1 class="app-title"><span id="company-id"></span></h1>
         <select id="floor-select" class="floor-selector">
-            <option value="1">Floor 1</option>
-            <option value="2">Floor 2</option>
+            <!-- Options will be dynamically added here -->
         </select>
+
     </header>
     <main class="app-content">
         <div id="main-light" class="traffic-light-container">
@@ -25,6 +25,46 @@
     <div id="other-lights" class="other-lights-container">
         <!-- Additional lights will be dynamically added here -->
     </div>
+
+    <!-- Include Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeX1sq_oCN2sn2eZbytYG3vsCah0qZ1cY",
+            authDomain: "indoornav-f5ac1.firebaseapp.com",
+            projectId: "indoornav-f5ac1",
+            storageBucket: "indoornav-f5ac1.appspot.com",
+            messagingSenderId: "459488307421",
+            appId: "1:459488307421:web:f228709a00c99a7d6cd334",
+            measurementId: "G-GNCC83CJNN"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        // Get a reference to the Firestore database
+        const db = firebase.firestore();
+
+        // Function to add data to Firestore
+        function addData() {
+            const data = {
+                floor: document.getElementById('floor-select').value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            // Add a new document with a generated ID
+            db.collection("trafficLights").add(data)
+                .then((docRef) => {
+                    console.log("Document written with ID: ", docRef.id);
+                })
+                .catch((error) => {
+                    console.error("Error adding document: ", error);
+                });
+        }
+    </script>
+
+    <!-- Your custom JavaScript file -->
     <script src="app.js"></script>
 </body>
 
