@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
           floor: 1,
           areas: [
             {
-              name: "Vestergate",
+              name: "Vestergate skolebakken kryss",
               coords: { lat: 55.6438022332892, lng: 9.645921707177573 },
               radius: 14,
             },
@@ -36,13 +36,13 @@ document.addEventListener("DOMContentLoaded", function () {
           floor: 2,
           areas: [
             {
-              name: "Second Floor Area 1 hoes",
+              name: "Second Floor Area 1 vestergade",
               coords: { lat: 55.644, lng: 9.642 },
               radius: 20,
             },
             // Add more areas for the second floor of company1 if needed
             {
-              name: "Second Floor Area 2",
+              name: "Second Floor Area 2 vestergade",
               coords: { lat: 55.648, lng: 9.643 },
               radius: 16,
             },
@@ -185,7 +185,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to fetch floorsData for the closest company and start location updates
-  // Function to fetch floorsData for the closest company and start location updates
   function fetchClosestCompanyAndStartUpdates() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -202,20 +201,13 @@ document.addEventListener("DOMContentLoaded", function () {
               querySnapshot.forEach((doc) => {
                 const companyData = doc.data();
                 if (companyData && companyData.floorsData) {
-                  companyData.floorsData.forEach((floorData) => {
-                    floorData.areas.forEach((area) => {
-                      const distance = calculateDistance(
-                        userCoords,
-                        area.coords
-                      );
-                      if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestCompany = companyData;
-                        document.getElementById("company-id").textContent =
-                          closestCompany.companyId; // Set the companyId in the header
-                      }
-                    });
-                  });
+                  const companyCoords =
+                    companyData.floorsData[0].areas[0].coords; // Assuming the first area's coordinates represent the company's location
+                  const distance = calculateDistance(userCoords, companyCoords);
+                  if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestCompany = companyData;
+                  }
                 }
               });
               if (closestCompany) {
@@ -321,36 +313,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to update UI for the selected floor
   function updateUIForFloor(userCoords, floorNumber) {
-    const companyId = getSelectedCompanyId(); // Get the selected companyId dynamically
-    // Fetch floorsData for the selected floor and company
+    const floorsData = []; // Define an empty array to store fetched floorsData
+
     db.collection("companies")
-      .doc(companyId)
       .get()
-      .then((doc) => {
-        if (doc.exists) {
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
           const companyData = doc.data();
           if (companyData && companyData.floorsData) {
-            const selectedFloorData = companyData.floorsData.find(
-              (floorData) => floorData.floor === floorNumber
+            const companyFloorsData = companyData.floorsData;
+            const floorData = companyFloorsData.find(
+              (floor) => floor.floor === floorNumber
             );
-            if (selectedFloorData) {
-              const areasWithDistance = selectedFloorData.areas.map((area) => ({
-                ...area,
-                distance: calculateDistance(userCoords, area.coords),
-              }));
-              updateUI(areasWithDistance);
-            } else {
-              console.log("Floor data not found for the selected floor.");
+            if (floorData) {
+              floorsData.push(floorData);
             }
-          } else {
-            console.log("No floors data available for the company.");
           }
-        } else {
-          console.log("Company document not found.");
-        }
+        });
+        const areasWithDistance = floorsData[0].areas.map((area) => ({
+          ...area,
+          distance: calculateDistance(userCoords, area.coords),
+        }));
+        updateUI(areasWithDistance);
       })
       .catch((error) => {
-        console.log("Error getting company document:", error);
+        console.log("Error getting documents: ", error);
       });
   }
 
@@ -420,17 +407,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to get the selected companyId dynamically based on the selected floor
-  function getSelectedCompanyId() {
-    const floorSelect = document.getElementById("floor-select");
-    const selectedFloor = parseInt(floorSelect.value, 10);
-    // Implement your logic to get the companyId based on the selected floor
-    // For now, returning a default value
-    return "company1";
-  }
-
   // Write floorsData to Firestore when the document is loaded
-  // writeFloorsDataToFirestore();
+  writeFloorsDataToFirestore();
 
   // Initialize updates for the closest company when the page loads
   fetchClosestCompanyAndStartUpdates();
