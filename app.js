@@ -197,8 +197,9 @@ document.addEventListener("DOMContentLoaded", function () {
           db.collection("companies")
             .get()
             .then((querySnapshot) => {
-              let closestCompany;
+              let closestCompany = null;
               let closestDistance = Infinity;
+
               querySnapshot.forEach((doc) => {
                 const companyData = doc.data();
                 if (companyData && companyData.floorsData) {
@@ -211,16 +212,19 @@ document.addEventListener("DOMContentLoaded", function () {
                       if (distance < closestDistance) {
                         closestDistance = distance;
                         closestCompany = companyData;
-                        document.getElementById("company-id").textContent =
-                          closestCompany.companyId; // Set the companyId in the header
                       }
                     });
                   });
                 }
               });
+
+              // Update UI with closest company data
               if (closestCompany) {
+                document.getElementById("company-id").textContent =
+                  closestCompany.companyId;
+                console.log("Closest company:", closestCompany);
                 populateFloorDropdown(closestCompany.floorsData);
-                startLocationUpdates(closestCompany.floorsData[0].floor); // Start updates for the first floor of the closest company
+                startLocationUpdates(closestCompany.floorsData[0].floor);
               }
             })
             .catch((error) => {
@@ -358,31 +362,63 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateUI(areas) {
     const mainLightContainer = document.getElementById("main-light");
     const otherLightsContainer = document.getElementById("other-lights");
+
+    // Clear existing contents
     mainLightContainer.innerHTML = "";
     otherLightsContainer.innerHTML = "";
 
     // Sort areas based on distance in ascending order
     areas.sort((a, b) => a.distance - b.distance);
 
+    // Iterate through sorted areas to create light elements
     areas.forEach((area, index) => {
+      // Create a new div element for the light
       const lightElement = document.createElement("div");
       lightElement.className =
         "traffic-light " + (index === 0 ? "main" : "smaller");
-      const colorAndStatus = getColorAndStatus(area.distance, area.radius);
-      lightElement.innerHTML = `<div class="light" style="background-color: ${colorAndStatus.color};"></div>
-                                          <span>${area.name}: ${colorAndStatus.status}</span>`;
 
+      // Determine color and status based on the area properties
+      const colorAndStatus = getColorAndStatus(area.distance, area.radius);
+      lightElement.innerHTML = lightElement.innerHTML = `
+    <div class="light" style="background-color: ${colorAndStatus.color};"></div>
+    <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
+`;
+
+      // Append the first element as the main light, others as smaller lights
       if (index === 0) {
         mainLightContainer.appendChild(lightElement);
       } else {
-        // Always append the lights to the right
-        lightElement.style.order = index;
         otherLightsContainer.appendChild(lightElement);
+
+        // Add click event listener to swap with main light
         lightElement.addEventListener("click", function () {
           swapWithMainLight(index);
         });
       }
     });
+  }
+
+  // Mock function for getColorAndStatus just for context
+  function getColorAndStatus(distance, radius) {
+    const status = distance < radius ? "Inside" : "Outside";
+    const color = distance < radius ? "#4CAF50" : "#F44336"; // Green for inside, Red for outside
+    return { color, status };
+  }
+
+  // Function to swap the clicked light with the main light
+  function swapWithMainLight(index) {
+    const areas = [...document.querySelectorAll(".traffic-light")];
+    const mainArea = areas.splice(index, 1)[0];
+    areas.unshift(mainArea);
+
+    // Reset the UI with new order
+    updateUI(
+      areas.map((area) => ({
+        name: area.textContent.split(":")[0],
+        distance: parseFloat(area.textContent.split(":")[1].trim()),
+        radius: 100, // Assume some default radius
+      }))
+    );
   }
 
   // Function to handle floor change
@@ -435,4 +471,5 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize updates for the closest company when the page loads
   fetchClosestCompanyAndStartUpdates();
 });
+
 
