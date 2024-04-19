@@ -11,24 +11,22 @@
 
 <body>
     <header class="app-header">
-        <h1 class="app-title"><span id="company-id"></span></h1>
+        <h1 class="app-title"><span id="company-id">Traffic Control</span></h1>
         <select id="floor-select" class="floor-selector">
             <!-- Options will be dynamically added here -->
         </select>
-
     </header>
     <main class="app-content">
-        <div id="main-light" class="traffic-light-container">
+        <div id="main-light" class="traffic-light-container big-light">
             <!-- Main traffic light will be dynamically added here -->
         </div>
     </main>
     <div id="other-lights" class="other-lights-container">
         <!-- Additional lights will be dynamically added here -->
     </div>
-
-    <!-- Include Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
 
     <script>
         // Initialize Firebase
@@ -63,8 +61,6 @@
                 });
         }
     </script>
-
-    <!-- Your custom JavaScript file -->
     <script src="app.js"></script>
 </body>
 
