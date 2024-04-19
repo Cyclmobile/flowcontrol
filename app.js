@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
         () => {
           alert("Unable to access your location.");
         },
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
       alert("Geolocation is not supported by this browser.");
