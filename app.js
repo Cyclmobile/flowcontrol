@@ -190,20 +190,22 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((querySnapshot) => {
         let closestCompanyDocId = null;
         let closestDistance = Infinity;
-        let closestFloorsData = [];
+        let closestCompanyFloorsData = [];
 
         querySnapshot.forEach((doc) => {
           const companyData = doc.data();
           if (companyData && companyData.floorsData) {
             companyData.floorsData.forEach((floorData) => {
-              floorData.areas.forEach((area) => {
-                const distance = calculateDistance(userCoords, area.coords);
-                if (distance < closestDistance) {
-                  closestDistance = distance;
-                  closestCompanyDocId = doc.id;
-                  closestFloorsData = companyData.floorsData;
-                }
-              });
+              const firstFloorCoords = floorData.areas.find(
+                (area) => area.coords && area.coords.lat && area.coords.lng
+              ).coords;
+              const distance = calculateDistance(userCoords, firstFloorCoords);
+
+              if (distance < closestDistance) {
+                closestDistance = distance;
+                closestCompanyDocId = doc.id;
+                closestCompanyFloorsData = companyData.floorsData;
+              }
             });
           }
         });
@@ -211,16 +213,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (closestCompanyDocId) {
           document.getElementById("company-id").textContent =
             closestCompanyDocId;
-          populateFloorDropdown(closestFloorsData, closestCompanyDocId);
-          // Find the index of the floor closest to the user
-          const closestFloorIndex = closestFloorsData.findIndex(
-            (floorData) => floorData.floor === 1
-          );
-          // Start location updates for the closest floor
-          startLocationUpdates(
-            closestFloorIndex !== -1 ? closestFloorIndex : 0,
-            closestCompanyDocId
-          );
+          populateFloorDropdown(closestCompanyFloorsData, closestCompanyDocId);
+          // Start location updates for the first floor of the closest company
+          startLocationUpdates(0, closestCompanyDocId); // Assuming the first floor index is always 0
         }
       })
       .catch((error) => {
