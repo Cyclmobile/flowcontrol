@@ -211,8 +211,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         if (closestCompanyDocId) {
-          document.getElementById("company-id").textContent =
-            closestCompanyDocId;
           populateFloorDropdown(closestCompanyFloorsData, closestCompanyDocId);
           // Start location updates for the first floor of the closest company
           startLocationUpdates(0, closestCompanyDocId); // Assuming the first floor index is always 0
@@ -263,14 +261,30 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to start location updates for the selected floor
-  function startLocationUpdates(floorNumber, companyName) {
+  function startLocationUpdates(floorNumber, docID) {
     if (locationUpdateInterval) {
       clearInterval(locationUpdateInterval);
     }
-    locateUserAndDisplay(floorNumber, companyName);
+    locateUserAndDisplay(floorNumber, docID);
     locationUpdateInterval = setInterval(() => {
-      locateUserAndDisplay(floorNumber, companyName);
+      locateUserAndDisplay(floorNumber, docID);
     }, updateInterval);
+
+    // Read companyId from Firestore and set it as text content
+    db.collection("companies")
+      .doc(docID)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const companyId = doc.data().companyId;
+          document.getElementById("company-id").textContent = companyId;
+        } else {
+          console.log("No such document!");
+        }
+      })
+      .catch((error) => {
+        console.log("Error getting document:", error);
+      });
   }
 
   // Function to locate user and display UI for the selected floor
