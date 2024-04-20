@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Define variables
   let locationUpdateInterval;
   const updateInterval = 500; // update location every 500 milliseconds
-
   // Define floorsData including extra companies, minimum 2 floors, and at least 2 areas on second floors
   const floorsData = [
     {
@@ -184,7 +183,51 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Function to fetch floorsData for the closest company and start location updates
+  // Function to find the closest company based on user coordinates
+  function findClosestCompany(userCoords) {
+    db.collection("companies")
+      .get()
+      .then((querySnapshot) => {
+        let closestCompanyDocId = null;
+        let closestDistance = Infinity;
+        let closestFloorsData = [];
+
+        querySnapshot.forEach((doc) => {
+          const companyData = doc.data();
+          if (companyData && companyData.floorsData) {
+            companyData.floorsData.forEach((floorData) => {
+              floorData.areas.forEach((area) => {
+                const distance = calculateDistance(userCoords, area.coords);
+                if (distance < closestDistance) {
+                  closestDistance = distance;
+                  closestCompanyDocId = doc.id;
+                  closestFloorsData = companyData.floorsData;
+                }
+              });
+            });
+          }
+        });
+
+        if (closestCompanyDocId) {
+          document.getElementById("company-id").textContent =
+            closestCompanyDocId;
+          populateFloorDropdown(closestFloorsData, closestCompanyDocId);
+          // Find the index of the floor closest to the user
+          const closestFloorIndex = closestFloorsData.findIndex(
+            (floorData) => floorData.floor === 1
+          );
+          // Start location updates for the closest floor
+          startLocationUpdates(
+            closestFloorIndex !== -1 ? closestFloorIndex : 0,
+            closestCompanyDocId
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error getting documents: ", error);
+      });
+  }
+
   // Function to fetch floorsData for the closest company and start location updates
   function fetchClosestCompanyAndStartUpdates() {
     if (navigator.geolocation) {
@@ -194,116 +237,49 @@ document.addEventListener("DOMContentLoaded", function () {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          db.collection("companies")
-            .get()
-            .then((querySnapshot) => {
-              let closestCompany = null;
-              let closestDistance = Infinity;
-
-              querySnapshot.forEach((doc) => {
-                const companyData = doc.data();
-                if (companyData && companyData.floorsData) {
-                  companyData.floorsData.forEach((floorData) => {
-                    floorData.areas.forEach((area) => {
-                      const distance = calculateDistance(
-                        userCoords,
-                        area.coords
-                      );
-                      if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestCompany = companyData;
-                      }
-                    });
-                  });
-                }
-              });
-
-              // Update UI with closest company data
-              if (closestCompany) {
-                document.getElementById("company-id").textContent =
-                  closestCompany.companyId;
-                console.log("Closest company:", closestCompany);
-                populateFloorDropdown(closestCompany.floorsData);
-                startLocationUpdates(closestCompany.floorsData[0].floor);
-              }
-            })
-            .catch((error) => {
-              console.log("Error getting documents: ", error);
-            });
+          findClosestCompany(userCoords);
         },
         () => {
           alert("Unable to access your location.");
         },
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+        {
+          enableHighAccuracy: true,
+          timeout: 6000,
+          maximumAge: 0,
+        }
       );
     } else {
       alert("Geolocation is not supported by this browser.");
     }
   }
 
-  // Fetch floorsData from Firestore for all companies and start location updates
-  function fetchFloorsDataAndStartUpdates() {
-    db.collection("companies")
-      .get()
-      .then((querySnapshot) => {
-        let allFloorsData = [];
-        querySnapshot.forEach((doc) => {
-          const companyData = doc.data();
-          if (companyData && companyData.floorsData) {
-            allFloorsData = allFloorsData.concat(companyData.floorsData); // Aggregate floors from all companies
-          }
-        });
-        populateFloorDropdown(allFloorsData);
-        if (allFloorsData.length > 0) {
-          startLocationUpdates(allFloorsData[0].floor); // Start updates for the first floor in the aggregated list
-        }
-      })
-      .catch((error) => {
-        console.log("Error getting documents: ", error);
-      });
-  }
-
   // Function to populate floor dropdown with available options
-  function populateFloorDropdown(floorsData) {
+  function populateFloorDropdown(floorsData, companyName) {
     const floorSelect = document.getElementById("floor-select");
     floorSelect.innerHTML = ""; // Clear existing options
 
-    // Create a Set to store unique floor numbers
-    const uniqueFloors = new Set();
-
-    floorsData.forEach((floorData) => {
-      if (floorData.floor) {
-        uniqueFloors.add(floorData.floor); // Add floor number to the Set
-      }
-    });
-
-    // Create dropdown options from the unique floor numbers
-    uniqueFloors.forEach((floor) => {
+    floorsData.forEach((floorData, index) => {
       const option = document.createElement("option");
-      option.value = floor;
-      option.textContent = `Floor ${floor}`;
+      option.value = index; // The index in the floorsData array
+      option.textContent = `Floor ${floorData.floor}`;
+      option.dataset.companyName = companyName; // Store the company document ID
       floorSelect.appendChild(option);
     });
   }
 
   // Function to start location updates for the selected floor
-  function startLocationUpdates(floorNumber) {
-    // Clear existing interval
+  function startLocationUpdates(floorNumber, companyName) {
     if (locationUpdateInterval) {
       clearInterval(locationUpdateInterval);
     }
-
-    // Fetch and display the initial location for the new floor immediately
-    locateUserAndDisplay(floorNumber);
-
-    // Set up a new interval for the new floor
-    locationUpdateInterval = setInterval(function () {
-      locateUserAndDisplay(floorNumber);
+    locateUserAndDisplay(floorNumber, companyName);
+    locationUpdateInterval = setInterval(() => {
+      locateUserAndDisplay(floorNumber, companyName);
     }, updateInterval);
   }
 
   // Function to locate user and display UI for the selected floor
-  function locateUserAndDisplay(floorNumber) {
+  function locateUserAndDisplay(floorNumber, companyName) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -311,12 +287,16 @@ document.addEventListener("DOMContentLoaded", function () {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
-          updateUIForFloor(userCoords, floorNumber);
+          updateUIForFloor(userCoords, floorNumber, companyName);
         },
         () => {
           alert("Unable to access your location.");
         },
-        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+        {
+          enableHighAccuracy: true,
+          timeout: 6000,
+          maximumAge: 0,
+        }
       );
     } else {
       alert("Geolocation is not supported by this browser.");
@@ -324,38 +304,49 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to update UI for the selected floor
-  function updateUIForFloor(userCoords, floorNumber) {
-    const companyId = getSelectedCompanyId(); // Get the selected companyId dynamically
-    // Fetch floorsData for the selected floor and company
+  function updateUIForFloor(userCoords, floorIndex, companyName) {
     db.collection("companies")
-      .doc(companyId)
+      .doc(companyName)
       .get()
       .then((doc) => {
         if (doc.exists) {
           const companyData = doc.data();
-          if (companyData && companyData.floorsData) {
-            const selectedFloorData = companyData.floorsData.find(
-              (floorData) => floorData.floor === floorNumber
-            );
-            if (selectedFloorData) {
-              const areasWithDistance = selectedFloorData.areas.map((area) => ({
-                ...area,
-                distance: calculateDistance(userCoords, area.coords),
-              }));
-              updateUI(areasWithDistance);
-            } else {
-              console.log("Floor data not found for the selected floor.");
-            }
+          const selectedFloorData = companyData.floorsData[floorIndex];
+          if (selectedFloorData) {
+            const areasWithDistance = selectedFloorData.areas.map((area) => ({
+              ...area,
+              distance: calculateDistance(userCoords, area.coords),
+            }));
+            updateUI(areasWithDistance);
           } else {
-            console.log("No floors data available for the company.");
+            console.log("Floor data not found for the selected floor.");
           }
         } else {
           console.log("Company document not found.");
         }
       })
       .catch((error) => {
-        console.log("Error getting company document:", error);
+        console.error("Error getting company document:", error);
       });
+  }
+
+  // Function to calculate distance between two coordinates (in meters)
+  function calculateDistance(coords1, coords2) {
+    const earthRadius = 6371e3; // meters
+    const lat1Radians = (coords1.lat * Math.PI) / 180;
+    const lat2Radians = (coords2.lat * Math.PI) / 180;
+    const deltaLatRadians = ((coords2.lat - coords1.lat) * Math.PI) / 180;
+    const deltaLngRadians = ((coords2.lng - coords1.lng) * Math.PI) / 180;
+
+    const a =
+      Math.sin(deltaLatRadians / 2) * Math.sin(deltaLatRadians / 2) +
+      Math.cos(lat1Radians) *
+        Math.cos(lat2Radians) *
+        Math.sin(deltaLngRadians / 2) *
+        Math.sin(deltaLngRadians / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return earthRadius * c; // in meters
   }
 
   // Function to update UI based on areas and distance
@@ -398,6 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Function to get color and status based on distance and radius
   // Mock function for getColorAndStatus just for context
   function getColorAndStatus(distance, radius) {
     const status = distance < radius ? "Inside" : "Outside";
@@ -405,6 +397,18 @@ document.addEventListener("DOMContentLoaded", function () {
     return { color, status };
   }
 
+  // Function to get color and status based on distance and radius
+  function getColorAndStatus(distance, radius) {
+    if (distance < radius) {
+      return { color: "green", status: "Very Close or Inside" };
+    } else if (distance <= 20) {
+      return { color: "yellow", status: `Close (${Math.round(distance)} M)` };
+    } else if (distance <= 300) {
+      return { color: "red", status: `Nearby (${Math.round(distance)} M)` };
+    } else {
+      return { color: "grey", status: `Far (${Math.round(distance)} M)` };
+    }
+  }
   // Function to swap the clicked light with the main light
   function swapWithMainLight(index) {
     const areas = [...document.querySelectorAll(".traffic-light")];
@@ -421,53 +425,15 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
-  // Function to handle floor change
+  // Event listener for when a floor is selected
   document
     .getElementById("floor-select")
     .addEventListener("change", function () {
-      startLocationUpdates(parseInt(this.value, 10));
+      const floorNumber = parseInt(this.value, 10);
+      const companyName = this.options[this.selectedIndex].dataset.companyName;
+      startLocationUpdates(floorNumber, companyName);
     });
 
-  // Function to calculate distance between two coordinates (in meters)
-  function calculateDistance(coords1, coords2) {
-    const R = 6371e3; // meters
-    const φ1 = (coords1.lat * Math.PI) / 180;
-    const φ2 = (coords2.lat * Math.PI) / 180;
-    const Δφ = ((coords2.lat - coords1.lat) * Math.PI) / 180;
-    const Δλ = ((coords2.lng - coords1.lng) * Math.PI) / 180;
-
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  // Function to get color and status based on distance and radius
-  function getColorAndStatus(distance, radius) {
-    if (distance < radius) {
-      return { color: "green", status: "Very Close or Inside" };
-    } else if (distance <= 20) {
-      return { color: "yellow", status: `Close (${Math.round(distance)} M)` };
-    } else if (distance <= 300) {
-      return { color: "red", status: `Nearby (${Math.round(distance)} M)` };
-    } else {
-      return { color: "grey", status: `Far (${Math.round(distance)} M)` };
-    }
-  }
-
-  // Function to get the selected companyId dynamically based on the selected floor
-  function getSelectedCompanyId() {
-    const floorSelect = document.getElementById("floor-select");
-    const selectedFloor = parseInt(floorSelect.value, 10);
-    // Implement your logic to get the companyId based on the selected floor
-    // For now, returning a default value
-    return "company1";
-  }
-
-  // Write floorsData to Firestore when the document is loaded
-  // writeFloorsDataToFirestore();
-
-  // Initialize updates for the closest company when the page loads
+  // Call the function to initialize the closest company updates
   fetchClosestCompanyAndStartUpdates();
 });
