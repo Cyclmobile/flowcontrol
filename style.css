@@ -40,9 +40,8 @@ html {
   border: none;
   border-radius: 10px;
   font-size: 16px;
+  margin-right: 25px;
   cursor: pointer;
-    margin-right: 25px;
-
 }
 
 .app-content {
@@ -147,4 +146,27 @@ html {
 .smaller .light {
   width: 100px; /* Smaller other lights */
   height: 100px;
+}
+
+.dot {
+  position: absolute;
+  width: 10px; /* Adjust size as needed */
+  height: 10px; /* Adjust size as needed */
+  background-color: var(--accent-color);
+  border-radius: 50%; /* Makes the dot circular */
+  /* Initially center it on top of the container, adjust using JS */
+  top: -5px; /* Adjust based on desired radius from center */
+  left: 50%;
+  transform: translateX(-50%);
+  transform-origin: 50% 50%; /* Center the transformation origin */
+  margin: 80px;
+}
+
+.traffic-light-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
