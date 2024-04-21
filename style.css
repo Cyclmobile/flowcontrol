@@ -12,8 +12,9 @@ html {
   color: var(--text-color);
   margin: 0;
   padding: 0;
-  height: 100vh;
-  overflow: hidden;
+  height: 100vh; /* This might be causing issues if content exceeds the viewport height */
+  overflow-x: hidden; /* Only hide horizontal overflow */
+  overflow-y: auto; /* Allow vertical scrolling */
   display: flex;
   flex-direction: column;
 }
