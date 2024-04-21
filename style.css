@@ -116,8 +116,6 @@ html {
   flex-direction: column;
   align-items: center;
   margin-bottom: 15px; /* Space between lights */
-  position: relative; /* Add this line */
-  margin-bottom: 15px; /* Space between lights */
 }
 
 .light {
@@ -148,15 +146,5 @@ html {
 .smaller .light {
   width: 100px; /* Smaller other lights */
   height: 100px;
-}
-.direction-indicator {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #f9d400; /* White color for the dot */
-  bottom: -5px;
-  right: -5px;
-  z-index: 1; /* Ensure it's above the main light */
 }
 
