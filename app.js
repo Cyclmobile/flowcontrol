@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Define variables
   let locationUpdateInterval;
-  const updateInterval = 300; // update location every 500 milliseconds
+  const updateInterval = 500; // update location every 500 milliseconds
   // Define floorsData including extra companies, minimum 2 floors, and at least 2 areas on second floors
   const floorsData = [
     {
@@ -312,20 +312,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function updateDotPosition(degrees) {
-    const dot = document.querySelector(".dot");
-    const radius = 100; // radius in pixels from the center of the light
-
-    // Calculate the position of the dot
-    const radians = degrees * (Math.PI / 180);
-    const x = radius * Math.cos(radians);
-    const y = radius * Math.sin(radians);
-
-    // Update the position of the dot
-    dot.style.left = `calc(50% + ${x}px)`;
-    dot.style.top = `calc(50% + ${y}px)`;
-  }
-
   // Function to update UI for the selected floor
   function updateUIForFloor(userCoords, floorIndex, companyName) {
     db.collection("companies")
@@ -340,16 +326,6 @@ document.addEventListener("DOMContentLoaded", function () {
               ...area,
               distance: calculateDistance(userCoords, area.coords),
             }));
-
-            // Determine the direction to the closest area
-            if (areasWithDistance.length > 0) {
-              const directionToClosestArea = calculateDirection(
-                userCoords,
-                areasWithDistance[0].coords
-              );
-              updateDotPosition(directionToClosestArea);
-            }
-
             updateUI(areasWithDistance);
           } else {
             console.log("Floor data not found for the selected floor.");
@@ -361,13 +337,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         console.error("Error getting company document:", error);
       });
-  }
-
-  function calculateDirection(currentCoords, targetCoords) {
-    const deltaY = targetCoords.lat - currentCoords.lat;
-    const deltaX = targetCoords.lng - currentCoords.lng;
-    const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-    return angle;
   }
 
   // Function to calculate distance between two coordinates (in meters)
@@ -410,13 +379,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Determine color and status based on the area properties
       const colorAndStatus = getColorAndStatus(area.distance, area.radius);
-      lightElement.innerHTML = lightElement.innerHTML = `
-    <div class="light" style="background-color: ${colorAndStatus.color};"></div>
-    <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
-`;
+      lightElement.innerHTML = `
+            <div class="light" style="background-color: ${colorAndStatus.color};"></div>
+            <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
+            `;
 
       // Append the first element as the main light, others as smaller lights
       if (index === 0) {
+        // Add direction indicator dot to main light
+        const directionIndicator = document.createElement("div");
+        directionIndicator.className = "direction-indicator";
+        lightElement.appendChild(directionIndicator);
+
         mainLightContainer.appendChild(lightElement);
       } else {
         otherLightsContainer.appendChild(lightElement);
@@ -477,4 +451,5 @@ document.addEventListener("DOMContentLoaded", function () {
   // Call the function to initialize the closest company updates
   fetchClosestCompanyAndStartUpdates();
 });
+
 
