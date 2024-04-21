@@ -116,6 +116,8 @@ html {
   flex-direction: column;
   align-items: center;
   margin-bottom: 15px; /* Space between lights */
+  position: relative; /* Add this line */
+  margin-bottom: 15px; /* Space between lights */
 }
 
 .light {
@@ -147,26 +149,14 @@ html {
   width: 100px; /* Smaller other lights */
   height: 100px;
 }
-
-.dot {
+.direction-indicator {
   position: absolute;
-  width: 10px; /* Adjust size as needed */
-  height: 10px; /* Adjust size as needed */
-  background-color: var(--accent-color);
-  border-radius: 50%; /* Makes the dot circular */
-  /* Initially center it on top of the container, adjust using JS */
-  top: -5px; /* Adjust based on desired radius from center */
-  left: 50%;
-  transform: translateX(-50%);
-  transform-origin: 50% 50%; /* Center the transformation origin */
-  margin: 80px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #f9d400; /* White color for the dot */
+  bottom: -5px;
+  right: -5px;
+  z-index: 1; /* Ensure it's above the main light */
 }
 
-.traffic-light-container {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
