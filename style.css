@@ -1,19 +1,20 @@
-/* Stylesheet for Ultra Modern Traffic Light Tracker */
 :root {
-  --primary-color: #20232a;
-  --secondary-color: #282c34;
-  --accent-color: #61dafb;
-  --text-color: #ffffff;
+  --primary-color: #33374d; /* Dark slate blue */
+  --secondary-color: #454965; /* Dark gray blue */
+  --accent-color: #4caf50; /* Green for accent */
+  --text-color: #ffffff; /* Pure white */
 }
+
 body,
 html {
   font-family: "Montserrat", sans-serif;
-  background-color: #20232a;
-  color: #e0e0e0;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   margin: 0;
   padding: 0;
-  height: 100vh;
-  overflow: hidden;
+  height: 100vh; /* This might be causing issues if content exceeds the viewport height */
+  overflow-x: hidden; /* Only hide horizontal overflow */
+  overflow-y: auto; /* Allow vertical scrolling */
   display: flex;
   flex-direction: column;
 }
@@ -22,23 +23,25 @@ html {
   width: 100%;
   padding: 20px 15px;
   background-color: var(--secondary-color);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
 .app-title {
-  font-weight: 100;
+  font-weight: 500;
   color: var(--accent-color);
 }
 
 .floor-selector {
-  padding: 10px 16px;
+  padding: 10px 20px;
   background-color: var(--primary-color);
-  color: #ffffff;
+  color: var(--text-color);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
-  cursor: pointer; /* Make it clear it's selectable */
+  margin-right: 25px;
+  cursor: pointer;
 }
 
 .app-content {
@@ -48,30 +51,28 @@ html {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 0;
+  padding-top: 20px;
 }
 
 .traffic-light-container,
 .other-lights-container {
-  width: 30%;
+  width: 100%;
   max-width: 600px;
   display: flex;
-  justify-content: center; /* Ensures centering of all child elements including #main-light */
-  position: relative;
-  margin: 10px 0;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-#main-light .light {
-  width: 300px; /* Fixed width for consistency */
-  height: 300px; /* Fixed height for consistency */
+#main-light .light,
+.other-lights-container .light {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  justify-content: center; /* This will center the child elements horizontally */
-  background-color: #757575;
+  background-color: var(--secondary-color);
   display: flex;
   justify-content: center;
   align-items: center;
   transition: all 0.3s ease;
-  width: 100%; /* Ensure it takes full width if not already set */
 }
 
 .other-lights-container {
@@ -133,6 +134,7 @@ html {
   color: var(--text-color); /* Use variable for text color */
   font-size: 14px; /* Appropriately sized text */
   text-align: center; /* Center the text below the light */
+  margin: 5px;
 }
 
 /* Styling for main and smaller lights for distinction */
