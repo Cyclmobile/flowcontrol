@@ -312,10 +312,47 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // Function to update UI for the selected floor
-  function updateUIForFloor(userCoords, floorIndex, companyName) {
+  let lastLoggedAreaKey = null; // Track the last area the user was logged in
+  const userEntryLog = {};
+
+  // Function to log user entry to Firestore when they are inside or very close to an area
+  // Function to log user entry to Firestore when they are inside or very close to an area
+  function logUserEntry(companyId, floorIndex, area, userCoords) {
+    if (!area || !area.name) {
+      console.error("Invalid area data provided. Cannot log entry.");
+      return; // Exit if area data is invalid
+    }
+
+    const logKey = `${companyId}-${floorIndex}-${area.name}`;
+    if (!userEntryLog[logKey]) {
+      // Check if this area has already been logged for the user in this session
+      const userEntry = {
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(), // Log the current time
+        areaName: area.name, // Ensure area name is logged
+        userCoords: userCoords, // Log user coordinates
+        areaCoords: area.coords, // Log area coordinates
+      };
+
+      // Add log to the specific area in the company document
+      db.collection("companies")
+        .doc(companyId)
+        .collection("logs")
+        .add(userEntry)
+        .then(() => {
+          console.log(`User log entry successfully written for ${area.name}!`);
+        })
+        .catch((error) => {
+          console.error("Error writing user log entry: ", error);
+        });
+
+      userEntryLog[logKey] = true; // Mark this area as logged
+    }
+  }
+
+  // Updated function to update UI for the selected floor
+  function updateUIForFloor(userCoords, floorIndex, companyId) {
     db.collection("companies")
-      .doc(companyName)
+      .doc(companyId)
       .get()
       .then((doc) => {
         if (doc.exists) {
@@ -327,16 +364,36 @@ document.addEventListener("DOMContentLoaded", function () {
               distance: calculateDistance(userCoords, area.coords),
             }));
             updateUI(areasWithDistance);
-          } else {
-            console.log("Floor data not found for the selected floor.");
+            // Determine if logging is needed and handle log resetting
+            handleAreaLogging(
+              areasWithDistance,
+              companyId,
+              floorIndex,
+              userCoords
+            );
           }
-        } else {
-          console.log("Company document not found.");
         }
-      })
-      .catch((error) => {
-        console.error("Error getting company document:", error);
       });
+  }
+
+  function handleAreaLogging(
+    areasWithDistance,
+    companyId,
+    floorIndex,
+    userCoords
+  ) {
+    areasWithDistance.forEach((area) => {
+      const currentAreaKey = `${companyId}-${floorIndex}-${area.name}`;
+      if (area.distance <= area.radius) {
+        if (lastLoggedAreaKey !== currentAreaKey) {
+          if (lastLoggedAreaKey) {
+            userEntryLog[lastLoggedAreaKey] = false; // Reset the previous area log status
+          }
+          logUserEntry(companyId, floorIndex, area, userCoords);
+          lastLoggedAreaKey = currentAreaKey; // Update the last logged area
+        }
+      }
+    });
   }
 
   // Function to calculate distance between two coordinates (in meters)
@@ -379,18 +436,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Determine color and status based on the area properties
       const colorAndStatus = getColorAndStatus(area.distance, area.radius);
-      lightElement.innerHTML = `
-            <div class="light" style="background-color: ${colorAndStatus.color};"></div>
-            <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
-            `;
+      lightElement.innerHTML = lightElement.innerHTML = `
+    <div class="light" style="background-color: ${colorAndStatus.color};"></div>
+    <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
+`;
 
       // Append the first element as the main light, others as smaller lights
       if (index === 0) {
-        // Add direction indicator dot to main light
-        const directionIndicator = document.createElement("div");
-        directionIndicator.className = "direction-indicator";
-        lightElement.appendChild(directionIndicator);
-
         mainLightContainer.appendChild(lightElement);
       } else {
         otherLightsContainer.appendChild(lightElement);
