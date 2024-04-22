@@ -147,8 +147,8 @@ html {
 }
 
 .smaller .light {
-  width: 100px; /* Smaller other lights */
-  height: 100px;
+  width: 50px; /* Smaller other lights */
+  height: 50px;
 }
 .ads-container {
   background-color: var(--primary-color);
