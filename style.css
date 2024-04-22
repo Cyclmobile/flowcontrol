@@ -1,20 +1,20 @@
 :root {
-  --primary-color: #33374d; /* Dark slate blue */
-  --secondary-color: #454965; /* Dark gray blue */
-  --accent-color: #4caf50; /* Green for accent */
-  --text-color: #ffffff; /* Pure white */
+  --primary-color: #263238; /* Deep Blue Grey */
+  --secondary-color: #37474F; /* Blue Grey */
+  --accent-color: #FFC107; /* Amber for accent */
+  --text-color: #FFFFFF; /* Pure white */
+  --ripple-effect: rgba(255, 255, 255, 0.3); /* White ripple effect for buttons */
 }
 
-body,
-html {
-  font-family: "Montserrat", sans-serif;
+html, body {
+  font-family: 'Roboto', sans-serif;
   background-color: var(--primary-color);
   color: var(--text-color);
   margin: 0;
   padding: 0;
-  height: 100vh; /* This might be causing issues if content exceeds the viewport height */
-  overflow-x: hidden; /* Only hide horizontal overflow */
-  overflow-y: auto; /* Allow vertical scrolling */
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
@@ -23,25 +23,32 @@ html {
   width: 100%;
   padding: 20px 15px;
   background-color: var(--secondary-color);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .app-title {
-  font-weight: 500;
+  font-weight: 700;
   color: var(--accent-color);
 }
 
 .floor-selector {
-  padding: 10px 20px;
-  background-color: var(--primary-color);
+  padding: 12px 24px;
+  background-color: var(--secondary-color);
   color: var(--text-color);
   border: none;
-  border-radius: 10px;
+  border-radius: 25px;
   font-size: 16px;
   margin-right: 25px;
   cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.2s;
+}
+
+.floor-selector:hover, .floor-selector:focus {
+  background-color: var(--accent-color);
+  box-shadow: 0 2px 10px var(--ripple-effect);
 }
 
 .app-content {
@@ -73,14 +80,15 @@ html {
   justify-content: center;
   align-items: center;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .other-lights-container {
   width: 100%;
   display: flex;
-  justify-content: start; /* Align items to the start */
-  overflow-x: auto; /* Allow horizontal scrolling */
-  background-color: #282c34;
+  justify-content: start;
+  overflow-x: auto;
+  background-color: var(--primary-color);
   padding: 10px 0;
 }
 
@@ -88,17 +96,17 @@ html {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #757575;
+  background-color: var(--secondary-color);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: all 0.3s ease;
-  margin: 0 15px; /* Sufficient spacing */
+  margin: 0 15px;
 }
 
 .other-lights-container .light span {
-  color: #ffffff;
+  color: var(--text-color);
   font-size: 12px;
   margin-top: 5px;
 }
@@ -109,47 +117,43 @@ html {
     width: 150px;
     height: 150px;
   }
-  .ads-container img {
-    max-width: 40%; /* Adjust the max-width for larger screens */
-  }
 }
 
 .traffic-light {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 15px; /* Space between lights */
+  margin-bottom: 15px;
 }
 
 .light {
-  width: 150px; /* Size of the light circle */
+  width: 150px;
   height: 150px;
-  border-radius: 50%; /* Circular lights */
+  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s ease; /* Smooth transition for color change */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Soft shadow for 3D effect */
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .light-label {
-  margin-top: 8px; /* Space between the light and the label */
-  color: var(--text-color); /* Use variable for text color */
-  font-size: 14px; /* Appropriately sized text */
-  text-align: center; /* Center the text below the light */
-  margin: 5px;
+  margin-top: 8px;
+  color: var(--text-color);
+  font-size: 14px;
+  text-align: center;
 }
 
-/* Styling for main and smaller lights for distinction */
 .main .light {
-  width: 200px; /* Larger main light */
+  width: 200px;
   height: 200px;
 }
 
 .smaller .light {
-  width: 80px; /* Smaller other lights */
-  height: 80px;
+  width: 50px;
+  height: 50px;
 }
+
 .ads-container {
   background-color: var(--primary-color);
   color: var(--text-color);
@@ -157,10 +161,9 @@ html {
   padding: 20px;
 }
 
-/* Responsive image settings */
 .ads-container img {
-  max-width: 50%; /* Ensures the image is never larger than the container */
-  height: auto; /* Maintains the aspect ratio of the image */
+  max-width: 100%;
+  height: auto;
 }
 
 
