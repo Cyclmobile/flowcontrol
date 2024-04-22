@@ -147,3 +147,13 @@ html {
   width: 100px; /* Smaller other lights */
   height: 100px;
 }
+.ads-container {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  text-align: center;
+}
+
+.ads-container img {
+  max-width: 40%;
+  height: 30%;
+}

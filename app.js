@@ -8,15 +8,19 @@ document.addEventListener("DOMContentLoaded", function () {
   // Define floorsData including extra companies, minimum 2 floors, and at least 2 areas on second floors
   const floorsData = [
     {
-      companyId: "company1",
+      companyId: "company11",
       floorsData: [
         {
           floor: 1,
           areas: [
             {
-              name: "Vestergate",
-              coords: { lat: 55.6438022332892, lng: 9.645921707177573 },
-              radius: 14,
+              name: "Second Floor Area 1",
+              coords: { lat: 55.644, lng: 9.642 },
+              radius: 20,
+              ads: {
+                message: "Special Offer just for you!",
+                image: "https://example.com/special-offer.jpg", // This field is optional
+              },
             },
             // Add more areas for company1 if needed
             {
@@ -49,122 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       ],
     },
-    {
-      companyId: "company2",
-      floorsData: [
-        {
-          floor: 1,
-          areas: [
-            {
-              name: "SøderGade",
-              coords: { lat: 55.64128357762472, lng: 9.646158041216147 },
-              radius: 14,
-            },
-            // Add more areas for company2 if needed
-            {
-              name: "Example Area 2",
-              coords: { lat: 55.642, lng: 9.646 },
-              radius: 15,
-            },
-            {
-              name: "Example Area 3",
-              coords: { lat: 55.641, lng: 9.644 },
-              radius: 18,
-            },
-          ],
-        },
-        {
-          floor: 2,
-          areas: [
-            {
-              name: "Second Floor Area 1",
-              coords: { lat: 55.644, lng: 9.642 },
-              radius: 20,
-            },
-            // Add more areas for the second floor of company2 if needed
-            {
-              name: "Second Floor Area 2",
-              coords: { lat: 55.645, lng: 9.643 },
-              radius: 16,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      companyId: "company3",
-      floorsData: [
-        {
-          floor: 1,
-          areas: [
-            {
-              name: "Example Area 1",
-              coords: { lat: 55.643, lng: 9.645 },
-              radius: 20,
-            },
-            // Add more areas for company3 if needed
-            {
-              name: "Example Area 2",
-              coords: { lat: 55.642, lng: 9.646 },
-              radius: 15,
-            },
-          ],
-        },
-        {
-          floor: 2,
-          areas: [
-            {
-              name: "Second Floor Area 1",
-              coords: { lat: 55.644, lng: 9.642 },
-              radius: 20,
-            },
-            // Add more areas for the second floor of company3 if needed
-            {
-              name: "Second Floor Area 2",
-              coords: { lat: 55.645, lng: 9.643 },
-              radius: 18,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      companyId: "company4",
-      floorsData: [
-        {
-          floor: 1,
-          areas: [
-            {
-              name: "Another Example Area",
-              coords: { lat: 55.645, lng: 9.648 },
-              radius: 18,
-            },
-            // Add more areas for company4 if needed
-            {
-              name: "Yet Another Example Area",
-              coords: { lat: 55.644, lng: 9.647 },
-              radius: 16,
-            },
-          ],
-        },
-        {
-          floor: 2,
-          areas: [
-            {
-              name: "Second Floor Area 1",
-              coords: { lat: 55.644, lng: 9.642 },
-              radius: 20,
-            },
-            // Add more areas for the second floor of company4 if needed
-            {
-              name: "Second Floor Area 2",
-              coords: { lat: 55.645, lng: 9.643 },
-              radius: 18,
-            },
-          ],
-        },
-      ],
-    },
+
     // Add more companies as examples
   ];
 
@@ -416,43 +305,58 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to update UI based on areas and distance
+  // Function to update UI based on areas and distance
   function updateUI(areas) {
     const mainLightContainer = document.getElementById("main-light");
     const otherLightsContainer = document.getElementById("other-lights");
+    const adsContainer = document.getElementById("ads-container"); // Container for ads
 
     // Clear existing contents
     mainLightContainer.innerHTML = "";
     otherLightsContainer.innerHTML = "";
+    adsContainer.innerHTML = ""; // Clear ads every time the UI updates
 
     // Sort areas based on distance in ascending order
     areas.sort((a, b) => a.distance - b.distance);
 
-    // Iterate through sorted areas to create light elements
+    // Iterate through sorted areas to create light elements and handle ads
     areas.forEach((area, index) => {
       // Create a new div element for the light
       const lightElement = document.createElement("div");
       lightElement.className =
         "traffic-light " + (index === 0 ? "main" : "smaller");
-
-      // Determine color and status based on the area properties
       const colorAndStatus = getColorAndStatus(area.distance, area.radius);
-      lightElement.innerHTML = lightElement.innerHTML = `
-    <div class="light" style="background-color: ${colorAndStatus.color};"></div>
-    <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
-`;
+      lightElement.innerHTML = `
+        <div class="light" style="background-color: ${colorAndStatus.color};"></div>
+        <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
+        `;
 
       // Append the first element as the main light, others as smaller lights
       if (index === 0) {
         mainLightContainer.appendChild(lightElement);
       } else {
         otherLightsContainer.appendChild(lightElement);
+      }
 
-        // Add click event listener to swap with main light
-        lightElement.addEventListener("click", function () {
-          swapWithMainLight(index);
-        });
+      // Display ads if applicable and within radius
+      if (area.ads && area.distance <= area.radius) {
+        const adElement = document.createElement("div");
+        adElement.className = "ad";
+        adElement.innerHTML =
+          `<p>${area.ads.message}</p>` +
+          (area.ads.image
+            ? `<img src="${area.ads.image}" alt="Ad image">`
+            : "");
+        adsContainer.appendChild(adElement);
       }
     });
+
+    // If no ad is applicable, ensure the ads container remains empty
+    if (!adsContainer.hasChildNodes()) {
+      adsContainer.style.display = "none"; // Hide the container if no ads are displayed
+    } else {
+      adsContainer.style.display = "block"; // Show the container if ads are available
+    }
   }
 
   // Function to get color and status based on distance and radius
@@ -502,4 +406,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Call the function to initialize the closest company updates
   fetchClosestCompanyAndStartUpdates();
+  // writeFloorsDataToFirestore();
 });
