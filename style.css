@@ -147,8 +147,8 @@ html {
 }
 
 .smaller .light {
-  width: 50px; /* Smaller other lights */
-  height: 50px;
+  width: 80px; /* Smaller other lights */
+  height: 80px;
 }
 .ads-container {
   background-color: var(--primary-color);
@@ -159,7 +159,7 @@ html {
 
 /* Responsive image settings */
 .ads-container img {
-  max-width: 100%; /* Ensures the image is never larger than the container */
+  max-width: 50%; /* Ensures the image is never larger than the container */
   height: auto; /* Maintains the aspect ratio of the image */
 }
 
