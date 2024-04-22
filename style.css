@@ -109,6 +109,9 @@ html {
     width: 150px;
     height: 150px;
   }
+  .ads-container img {
+    max-width: 40%; /* Adjust the max-width for larger screens */
+  }
 }
 
 .traffic-light {
@@ -151,10 +154,13 @@ html {
   background-color: var(--primary-color);
   color: var(--text-color);
   text-align: center;
+  padding: 20px;
 }
 
+/* Responsive image settings */
 .ads-container img {
-  width: 30%;
-  height: 30%;
+  max-width: 100%; /* Ensures the image is never larger than the container */
+  height: auto; /* Maintains the aspect ratio of the image */
 }
+
 
