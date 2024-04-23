@@ -12,24 +12,25 @@ html {
   color: var(--text-color);
   margin: 0;
   padding: 0;
-  min-height: 100vh; /* Ensure full vertical height, adaptable to content size */
-  overflow-x: hidden; /* Only hide horizontal overflow */
-  overflow-y: auto; /* Allow vertical scrolling */
+  min-height: 100vh; /* Adjusted for dynamic content sizing */
+  overflow-x: hidden; /* Hide horizontal overflow */
+  overflow-y: auto; /* Enable vertical scrolling */
   display: flex;
   flex-direction: column;
 }
 
 .app-header {
   width: 100%;
-  padding: 5px 15px;
+  padding: 20px 15px;
   background-color: var(--secondary-color);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .app-title {
-  font-weight: 100;
+  font-weight: 500;
   color: var(--accent-color);
 }
 
@@ -64,7 +65,7 @@ html {
 }
 
 #main-light .light,
-.other-lights-container . light {
+.other-lights-container .light {
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -78,22 +79,23 @@ html {
 .other-lights-container {
   width: 100%;
   display: flex;
-  justify-content: start; /* Align items to the start */
+  justify-content: flex-start; /* Improved alignment for start */
   overflow-x: auto; /* Allow horizontal scrolling */
-  background-color: #282c34;
+  background-color: #282c34; /* Darker color for visual depth */
+  padding: 10px 0;
 }
 
 .other-lights-container .light {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background-color: #757575;
+  background-color: #757575; /* Grey for neutral light */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: all 0.3s ease;
-  margin: 0 15px; /* Sufficient spacing */
+  margin: 0 15px; /* Consistent spacing */
 }
 
 .other-lights-container .light span {
@@ -103,13 +105,16 @@ html {
 }
 
 @media (max-width: 600px) {
+  .app-header,
+  .traffic-light-container,
+  .other-lights-container,
+  .app-content {
+    padding: 10px; /* Adjust padding for smaller screens */
+  }
   #main-light .light,
   .other-lights-container .light {
     width: 150px;
     height: 150px;
-  }
-  .ads-container img {
-    max-width: 40%; /* Adjust the max-width for larger screens */
   }
 }
 
@@ -117,37 +122,37 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 15px; /* Space between lights */
+  margin-bottom: 15px; /* Clear spacing between elements */
 }
 
 .light {
-  width: 150px; /* Size of the light circle */
+  width: 150px; /* Standard size for better visibility */
   height: 150px;
-  border-radius: 50%; /* Circular lights */
+  border-radius: 50%; /* Maintain circular shape */
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s ease; /* Smooth transition for color change */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Soft shadow for 3D effect */
+  transition: background-color 0.3s ease; /* Smooth transition */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow for depth */
 }
 
 .light-label {
-  color: var(--text-color); /* Use variable for text color */
-  font-size: 14px; /* Appropriately sized text */
-  text-align: center; /* Center the text below the light */
-  margin-top: 8px; /* Space between the light and the label */
+  color: var(--text-color);
+  font-size: 14px;
+  text-align: center;
+  margin-top: 8px; /* Optimized spacing */
 }
 
-/* Styling for main and smaller lights for distinction */
 .main .light {
-  width: 200px; /* Larger main light */
+  width: 200px; /* Emphasize main light */
   height: 200px;
 }
 
 .smaller .light {
-  width: 50px; /* Smaller other lights */
+  width: 50px; /* Smaller lights for less emphasis */
   height: 50px;
 }
+
 .ads-container {
   background-color: var(--primary-color);
   color: var(--text-color);
@@ -157,8 +162,9 @@ html {
 
 /* Responsive image settings */
 .ads-container img {
-  max-width: 100%; /* Ensures the image is never larger than the container */
-  height: auto; /* Maintains the aspect ratio of the image */
+  max-width: 100%; /* Ensure image does not overflow container */
+  height: auto; /* Maintain aspect ratio */
 }
+
 
 
