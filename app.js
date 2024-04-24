@@ -72,6 +72,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  mapboxgl.accessToken =
+    "pk.eyJ1IjoiZGluaTQ1OTMiLCJhIjoiY2x2Y3RnMDQ4MG1ycTJxcDdtNDNidG5yaiJ9.SpLsM8BXLF4Ia1Yhhsxylg"; // Replace with your Mapbox access token
+  var map = new mapboxgl.Map({
+    container: "mapbox-map", // container ID
+    style: "mapbox://styles/mapbox/streets-v11", // style URL
+    center: [-74.5, 40], // starting position [lng, lat]
+    zoom: 9, // starting zoom
+  });
+
   // Function to find the closest company based on user coordinates
   function findClosestCompany(userCoords) {
     db.collection("companies")
