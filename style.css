@@ -3,30 +3,42 @@
   --secondary-color: #454965; /* Dark gray blue */
   --accent-color: #4caf50; /* Green for accent */
   --text-color: #ffffff; /* Pure white */
+  --shadow-strong: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --button-hover: rgba(255, 255, 255, 0.1);
+  --background-transparent: rgba(51, 55, 77, 0.95);
 }
 
 body,
 html {
-  font-family: "Montserrat", sans-serif;
-  background-color: var(--primary-color);
-  color: var(--text-color);
   margin: 0;
   padding: 0;
-  min-height: 100vh; /* Adjusted for dynamic content sizing */
-  overflow-x: hidden; /* Hide horizontal overflow */
-  overflow-y: auto; /* Enable vertical scrolling */
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-.app-header {
+.mapbox-container {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 20px 15px;
-  background-color: var(--secondary-color);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  z-index: 1;
+}
+
+.app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  background-color: var(--background-transparent);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  z-index: 3;
+  box-shadow: var(--shadow-strong);
 }
 
 .app-title {
@@ -36,134 +48,91 @@ html {
 
 .floor-selector {
   padding: 10px 20px;
-  background-color: var(--primary-color);
+  background-color: var(--secondary-color);
   color: var(--text-color);
   border: none;
   border-radius: 10px;
   font-size: 16px;
-  margin-right: 25px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.app-content {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-top: 20px;
+.floor-selector:hover {
+  background-color: var(--button-hover);
 }
 
-.traffic-light-container,
-.other-lights-container {
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-#main-light .light,
-.other-lights-container .light {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: var(--secondary-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.3s ease;
+.traffic-light-container.big-light {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  box-shadow: var(--shadow-strong);
 }
 
 .other-lights-container {
-  width: 100%;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px; /* Ensures it does not stretch off the screen */
   display: flex;
-  justify-content: flex-start; /* Improved alignment for start */
-  overflow-x: auto; /* Allow horizontal scrolling */
-  background-color: #282c34; /* Darker color for visual depth */
-  padding: 10px 0;
+  overflow-x: auto;
+  z-index: 2;
+  background-color: var(--background-transparent);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-strong);
 }
 
-.other-lights-container .light {
+.light,
+.smaller .light {
   width: 80px;
   height: 80px;
+  margin-right: 15px;
   border-radius: 50%;
-  background-color: #757575; /* Grey for neutral light */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.3s ease;
-  margin: 0 15px; /* Consistent spacing */
-}
-
-.other-lights-container .light span {
-  color: #ffffff;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-@media (max-width: 600px) {
-  .app-header,
-  .traffic-light-container,
-  .other-lights-container,
-  .app-content {
-    padding: 10px; /* Adjust padding for smaller screens */
-  }
-  #main-light .light,
-  .other-lights-container .light {
-    width: 150px;
-    height: 150px;
-  }
-}
-
-.traffic-light {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 15px; /* Clear spacing between elements */
-}
-
-.light {
-  width: 150px; /* Standard size for better visibility */
-  height: 150px;
-  border-radius: 50%; /* Maintain circular shape */
+  background-color: #757575;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s ease; /* Smooth transition */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Enhanced shadow for depth */
-}
-
-.light-label {
-  color: var(--text-color);
-  font-size: 14px;
-  text-align: center;
-  margin-top: 8px; /* Optimized spacing */
+  transition: all 0.3s;
 }
 
 .main .light {
-  width: 200px; /* Emphasize main light */
-  height: 200px;
+  width: 120px;
+  height: 120px;
+  background-color: var(--accent-color);
 }
 
-.smaller .light {
-  width: 50px; /* Smaller lights for less emphasis */
-  height: 50px;
+.light-label {
+  margin-top: 8px;
+  color: var(--text-color);
+  font-size: 14px;
+  text-align: center;
 }
 
 .ads-container {
-  background-color: var(--primary-color);
-  color: var(--text-color);
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  padding: 15px;
+  background-color: var(--background-transparent);
   text-align: center;
-  padding: 20px;
+  z-index: 2;
+  border-radius: 8px;
+  box-shadow: var(--shadow-strong);
 }
 
-/* Responsive image settings */
-.ads-container img {
-  max-width: 100%; /* Ensure image does not overflow container */
-  height: auto; /* Maintain aspect ratio */
+@media (max-width: 600px) {
+  .light,
+  .smaller .light {
+    width: 50px;
+    height: 50px;
+  }
+
+  .main .light {
+    width: 100px;
+    height: 100px;
+  }
 }
 
 
