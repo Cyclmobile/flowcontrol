@@ -1,8 +1,14 @@
 :root {
-  --primary-color: #33374d; /* Dark slate blue */
-  --secondary-color: #454965; /* Dark gray blue */
-  --accent-color: #4caf50; /* Green for accent */
+  --primary-color: #2e3a59; /* Dark blue-gray */
+  --secondary-color: #5d6d97; /* Soft blue */
+  --accent-color: #ffc107; /* Amber for a vibrant accent */
   --text-color: #ffffff; /* Pure white */
+  --button-hover: rgba(
+    255,
+    193,
+    7,
+    0.2
+  ); /* Light amber for button hover effect */
 }
 
 body,
