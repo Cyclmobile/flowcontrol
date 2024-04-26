@@ -7,8 +7,8 @@
     <title>Find Your Way</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+
 </head>
 
 <body>
@@ -17,12 +17,10 @@
         <select id="floor-select" class="floor-selector">
             <!-- Options will be dynamically added here -->
         </select>
-
     </header>
-    <div id="mapbox-map" class="mapbox-container"></div> <!-- Fullscreen Mapbox map -->
+    <div id="mapbox-map" class="mapbox-container"></div>
 
     <main class="app-content">
-
         <div id="main-light" class="traffic-light-container big-light">
             <!-- Main traffic light will be dynamically added here -->
 
@@ -68,6 +66,7 @@
                 });
         }
     </script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
     <script src="app.js"></script>
 </body>
 
