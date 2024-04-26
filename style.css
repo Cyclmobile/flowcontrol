@@ -1,20 +1,30 @@
 :root {
-  --primary-color: #33374d; /* Dark slate blue */
-  --secondary-color: #454965; /* Dark gray blue */
-  --accent-color: #4caf50; /* Green for accent */
+  --primary-color: #2e3a59; /* Dark blue-gray */
+  --secondary-color: #5d6d97; /* Soft blue */
+  --accent-color: #ffc107; /* Amber for a vibrant accent */
   --text-color: #ffffff; /* Pure white */
+  --button-hover: rgba(
+    255,
+    193,
+    7,
+    0.2
+  ); /* Light amber for button hover effect */
 }
 
 body,
 html {
   font-family: "Montserrat", sans-serif;
-  background-color: var(--primary-color);
+  background: linear-gradient(
+    145deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
   color: var(--text-color);
   margin: 0;
   padding: 0;
-  height: 100vh; /* This might be causing issues if content exceeds the viewport height */
-  overflow-x: hidden; /* Only hide horizontal overflow */
-  overflow-y: auto; /* Allow vertical scrolling */
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
@@ -22,26 +32,30 @@ html {
 .app-header {
   width: 100%;
   padding: 20px 15px;
-  background-color: var(--secondary-color);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent overlay */
+  backdrop-filter: blur(5px); /* Blur effect for background */
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .app-title {
-  font-weight: 500;
+  font-weight: 700; /* Bolder font for the title */
   color: var(--accent-color);
+  text-transform: uppercase; /* Capitalize text */
 }
 
 .floor-selector {
   padding: 10px 20px;
-  background-color: var(--primary-color);
+  background-color: transparent;
   color: var(--text-color);
-  border: none;
-  border-radius: 10px;
+  border: 2px solid var(--accent-color); /* Accent border */
+  border-radius: 20px; /* Rounded borders */
   font-size: 16px;
-  margin-right: 25px;
   cursor: pointer;
+  margin-right: 20px;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .app-content {
@@ -81,12 +95,11 @@ html {
   justify-content: start; /* Align items to the start */
   overflow-x: auto; /* Allow horizontal scrolling */
   background-color: #282c34;
-  padding: 10px 0;
 }
 
 .other-lights-container .light {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   background-color: #757575;
   display: flex;
@@ -100,7 +113,7 @@ html {
 .other-lights-container .light span {
   color: #ffffff;
   font-size: 12px;
-  margin-top: 5px;
+  margin-top: 10px;
 }
 
 @media (max-width: 600px) {
@@ -161,4 +174,11 @@ html {
 .ads-container img {
   max-width: 100%; /* Ensures the image is never larger than the container */
   height: auto; /* Maintains the aspect ratio of the image */
+}
+
+.mapbox-container {
+  height: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
 }

@@ -72,6 +72,41 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  mapboxgl.accessToken =
+    "pk.eyJ1IjoiZGluaTQ1OTMiLCJhIjoiY2x2Y3RnMDQ4MG1ycTJxcDdtNDNidG5yaiJ9.SpLsM8BXLF4Ia1Yhhsxylg"; // Replace with your Mapbox access token
+  const map = new mapboxgl.Map({
+    container: "mapbox-map", // container ID
+    // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+    style: "mapbox://styles/mapbox/streets-v12", // style URL
+    center: [-24, 42], // starting center in [lng, lat]
+    zoom: 11, // starting zoom
+  });
+
+  // Add geolocate control to the map.
+  map.addControl(
+    new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      // When active the map will receive updates to the device's location as it changes.
+      trackUserLocation: true,
+      // Draw an arrow next to the location dot to indicate which direction the device is heading.
+      showUserHeading: true,
+    })
+  );
+
+  // Adding markers to map for each area
+  floorsData.forEach((company) => {
+    company.floorsData.forEach((floor) => {
+      floor.areas.forEach((area) => {
+        new mapboxgl.Marker()
+          .setLngLat([area.coords.lng, area.coords.lat])
+          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(area.name))
+          .addTo(map);
+      });
+    });
+  });
+
   // Function to find the closest company based on user coordinates
   function findClosestCompany(userCoords) {
     db.collection("companies")
@@ -122,7 +157,7 @@ document.addEventListener("DOMContentLoaded", function () {
           findClosestCompany(userCoords);
         },
         () => {
-          alert("Unable to access your location.");
+          console.log("Unable to access your location.");
         },
         {
           enableHighAccuracy: true,
@@ -131,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       );
     } else {
-      alert("Geolocation is not supported by this browser.");
+      console.log("Geolocation is not supported by this browser.");
     }
   }
 
@@ -188,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
           updateUIForFloor(userCoords, floorNumber, companyName);
         },
         () => {
-          alert("Unable to access your location.");
+          console.log("Unable to access your location.");
         },
         {
           enableHighAccuracy: true,
@@ -197,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       );
     } else {
-      alert("Geolocation is not supported by this browser.");
+      console.log("Geolocation is not supported by this browser.");
     }
   }
 
