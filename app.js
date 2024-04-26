@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       );
     } else {
-      alert("Geolocation is not supported by this browser.");
+      console.log("Geolocation is not supported by this browser.");
     }
   }
 
