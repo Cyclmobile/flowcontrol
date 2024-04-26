@@ -3,167 +3,172 @@
   --secondary-color: #454965; /* Dark gray blue */
   --accent-color: #4caf50; /* Green for accent */
   --text-color: #ffffff; /* Pure white */
-  --shadow-strong: 0 2px 10px rgba(0, 0, 0, 0.3);
-  --button-hover: rgba(255, 255, 255, 0.1);
-  --background-transparent: rgba(51, 55, 77, 0.95);
 }
 
 body,
 html {
+  font-family: "Montserrat", sans-serif;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   margin: 0;
   padding: 0;
-  height: 100vh;
-  overflow: hidden;
-  font-family: "Roboto", sans-serif;
+  height: 100vh; /* This might be causing issues if content exceeds the viewport height */
+  overflow-x: hidden; /* Only hide horizontal overflow */
+  overflow-y: auto; /* Allow vertical scrolling */
   display: flex;
   flex-direction: column;
-  background-color: var(--primary-color);
-}
-
-.mapbox-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
 }
 
 .app-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 90%;
-  padding: 20px;
-  background-color: var(--background-transparent);
+  width: 100%;
+  padding: 20px 15px;
+  background-color: var(--secondary-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 3;
-  box-shadow: var(--shadow-strong);
 }
-
-.app-title-container {
-  display: flex;
-  align-items: center;
-  background-color: var(--secondary-color);
-  padding: 10px 20px;
-  border-radius: 8px;
-  box-shadow: var(--shadow-strong);
-}
-
 .app-title {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--accent-color);
-  font-size: 24px;
 }
 
 .floor-selector {
-  position: absolute;
-  right: 20px;
-  top: 20px;
   padding: 10px 20px;
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
   color: var(--text-color);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
+  margin-right: 25px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.floor-selector:hover {
-  background-color: var(--accent-color);
+.app-content {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 20px;
 }
 
-.traffic-light-container.big-light {
-  position: absolute;
-  top: 86%;
-  left: 8%;
-  border-radius: 8px;
-  z-index: 3;
+.traffic-light-container,
+.other-lights-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+#main-light .light,
+.other-lights-container .light {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  display: flex;
   justify-content: center;
   align-items: center;
-  background-color: var(--background-transparent);
+  transition: all 0.3s ease;
 }
 
 .other-lights-container {
-  position: absolute;
-  bottom: 10px;
-  left: 70%;
-  transform: translateX(-50%);
+  width: 100%;
   display: flex;
-  overflow-x: auto;
-  padding: 10px;
-  background-color: var(--background-transparent);
-  border-radius: 8px;
-  box-shadow: var(--shadow-strong);
-  z-index: 2;
+  justify-content: start; /* Align items to the start */
+  overflow-x: auto; /* Allow horizontal scrolling */
+  background-color: #282c34;
 }
 
-.light {
-  width: 80px; /* Same size for uniformity */
-  height: 80px;
-  margin-right: 20px;
-  border-radius: 50%;
-  background-color: #8e44ad; /* Muted purple */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: green;
-  font-size: 14px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.light:last-child {
-  margin-right: 0;
-}
-
-.main .light {
+.other-lights-container .light {
   width: 120px;
   height: 120px;
-  background-color: var(
-    --accent-color
-  ); /* Keep the distinct color for emphasis */
+  border-radius: 50%;
+  background-color: #757575;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+  margin: 0 15px; /* Sufficient spacing */
 }
 
-.light-label {
-  color: var(--text-color);
+.other-lights-container .light span {
+  color: #ffffff;
   font-size: 12px;
-  text-align: center;
-}
-
-img {
-  width: 100%;
-  height: 100%;
-}
-
-.ads-container {
-  position: absolute;
-  bottom: 22%;
-  right: 48%;
-  width: 10%;
-  height: 10%;
-  width: 40%;
-  padding: 15px;
-  text-align: center;
-  z-index: 2;
-  border-radius: 8px;
-  box-shadow: var(--shadow-strong);
+  margin-top: 10px;
 }
 
 @media (max-width: 600px) {
-  .light,
-  .main .light {
-    width: 40px;
-    height: 40px;
+  #main-light .light,
+  .other-lights-container .light {
+    width: 150px;
+    height: 150px;
   }
-
-  .main .light {
-    width: 50px;
-    height: 50px;
+  .ads-container img {
+    max-width: 40%; /* Adjust the max-width for larger screens */
   }
 }
+
+.traffic-light {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px; /* Space between lights */
+}
+
+.light {
+  width: 150px; /* Size of the light circle */
+  height: 150px;
+  border-radius: 50%; /* Circular lights */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease; /* Smooth transition for color change */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Soft shadow for 3D effect */
+}
+
+.light-label {
+  margin-top: 8px; /* Space between the light and the label */
+  color: var(--text-color); /* Use variable for text color */
+  font-size: 14px; /* Appropriately sized text */
+  text-align: center; /* Center the text below the light */
+  margin: 5px;
+}
+
+/* Styling for main and smaller lights for distinction */
+.main .light {
+  width: 200px; /* Larger main light */
+  height: 200px;
+}
+
+.smaller .light {
+  width: 50px; /* Smaller other lights */
+  height: 50px;
+}
+.ads-container {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  text-align: center;
+  padding: 20px;
+}
+
+/* Responsive image settings */
+.ads-container img {
+  max-width: 100%; /* Ensures the image is never larger than the container */
+  height: auto; /* Maintains the aspect ratio of the image */
+}
+
+.mapbox-container {
+  height: 200px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
 
 
 
