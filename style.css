@@ -40,8 +40,9 @@ html {
   align-items: center;
 }
 .app-title {
-  font-weight: 500;
+  font-weight: 700; /* Bolder font for the title */
   color: var(--accent-color);
+  text-transform: uppercase; /* Capitalize text */
 }
 
 .floor-selector {
