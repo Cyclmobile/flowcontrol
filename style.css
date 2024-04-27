@@ -32,8 +32,8 @@ html {
 .app-header {
   width: 100%;
   padding: 20px 15px;
-  background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent overlay */
-  backdrop-filter: blur(5px); /* Blur effect for background */
+  background-color: rgba(255, 255, 255, 0.2); /* Updated to a lighter overlay */
+  backdrop-filter: blur(10px); /* Increased blur effect */
   box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
@@ -41,21 +41,25 @@ html {
 }
 
 .app-title {
-  font-weight: 700; /* Bolder font for the title */
+  font-weight: 700;
   color: var(--accent-color);
-  text-transform: uppercase; /* Capitalize text */
+  text-transform: uppercase;
 }
 
 .floor-selector {
   padding: 10px 20px;
   background-color: transparent;
   color: var(--text-color);
-  border: 2px solid var(--accent-color); /* Accent border */
-  border-radius: 20px; /* Rounded borders */
+  border: 2px solid var(--accent-color);
+  border-radius: 20px;
   font-size: 16px;
   cursor: pointer;
   margin-right: 20px;
   transition: background-color 0.3s, color 0.3s;
+  /* Hover effect */
+  &:hover {
+    background-color: var(--button-hover);
+  }
 }
 
 .app-content {
@@ -87,6 +91,7 @@ html {
   justify-content: center;
   align-items: center;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
 .other-lights-container {
