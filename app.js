@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
     container: "mapbox-map", // container ID
     // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
     style: "mapbox://styles/mapbox/streets-v12", // style URL
-    center: [-24, 42], // starting center in [lng, lat]
+    center: [9.645873501926303, 55.643828986581525], // starting center in [lng, lat]
     zoom: 11, // starting zoom
   });
 
@@ -95,17 +95,26 @@ document.addEventListener("DOMContentLoaded", function () {
     })
   );
 
-  // Adding markers to map for each area
-  floorsData.forEach((company) => {
-    company.floorsData.forEach((floor) => {
-      floor.areas.forEach((area) => {
-        new mapboxgl.Marker()
-          .setLngLat([area.coords.lng, area.coords.lat])
-          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(area.name))
-          .addTo(map);
-      });
+  let currentMarkers = []; // Store current markers for easy removal
+
+  function addMarkersForFloor(areas, map) {
+    removeCurrentMarkers(); // Clear existing markers before adding new ones
+    areas.forEach((area) => {
+      const marker = new mapboxgl.Marker()
+        .setLngLat([area.coords.lng, area.coords.lat])
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25 }) // Add popups
+            .setText(area.name + (area.ads ? ` - ${area.ads.message}` : ""))
+        )
+        .addTo(map);
+      currentMarkers.push(marker); // Store marker reference for removal later
     });
-  });
+  }
+
+  function removeCurrentMarkers() {
+    currentMarkers.forEach((marker) => marker.remove()); // Remove each marker from the map
+    currentMarkers = []; // Reset the array after removal
+  }
 
   // Function to find the closest company based on user coordinates
   function findClosestCompany(userCoords) {
@@ -138,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
           populateFloorDropdown(closestCompanyFloorsData, closestCompanyDocId);
           // Start location updates for the first floor of the closest company
           startLocationUpdates(0, closestCompanyDocId); // Assuming the first floor index is always 0
+          fetchFloorDataAndAddMarkers(0, closestCompanyDocId); // Add markers for the first floor immediately
         }
       })
       .catch((error) => {
@@ -436,13 +446,36 @@ document.addEventListener("DOMContentLoaded", function () {
     .addEventListener("change", function () {
       const floorNumber = parseInt(this.value, 10);
       const companyName = this.options[this.selectedIndex].dataset.companyName;
-      startLocationUpdates(floorNumber, companyName);
+      startLocationUpdates(floorNumber, companyName); // Existing function to update UI
+
+      // Fetch new floor data and update markers
+      fetchFloorDataAndAddMarkers(floorNumber, companyName);
     });
+
+  function fetchFloorDataAndAddMarkers(floorIndex, companyId) {
+    db.collection("companies")
+      .doc(companyId)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          const floorData = doc.data().floorsData[floorIndex];
+          if (floorData) {
+            addMarkersForFloor(floorData.areas, map); // Update markers for the selected floor
+          }
+        } else {
+          console.log("No such document!");
+        }
+      })
+      .catch((error) => {
+        console.error("Error getting document:", error);
+      });
+  }
 
   // Call the function to initialize the closest company updates
   fetchClosestCompanyAndStartUpdates();
   // writeFloorsDataToFirestore();
 });
+
 
 
 
