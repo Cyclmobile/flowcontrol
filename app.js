@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
     container: "mapbox-map", // container ID
     // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
     style: "mapbox://styles/mapbox/streets-v12", // style URL
-    center: [-24, 42], // starting center in [lng, lat]
+    center: [9.645873501926303, 55.643828986581525], // starting center in [lng, lat]
     zoom: 11, // starting zoom
   });
 
@@ -94,18 +94,6 @@ document.addEventListener("DOMContentLoaded", function () {
       showUserHeading: true,
     })
   );
-
-  // Adding markers to map for each area
-  floorsData.forEach((company) => {
-    company.floorsData.forEach((floor) => {
-      floor.areas.forEach((area) => {
-        new mapboxgl.Marker()
-          .setLngLat([area.coords.lng, area.coords.lat])
-          .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(area.name))
-          .addTo(map);
-      });
-    });
-  });
 
   // Function to find the closest company based on user coordinates
   function findClosestCompany(userCoords) {
