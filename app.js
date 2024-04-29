@@ -79,38 +79,25 @@ document.addEventListener("DOMContentLoaded", function () {
     // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
     style: "mapbox://styles/mapbox/streets-v12", // style URL
     center: [9.645873501926303, 55.643828986581525], // starting center in [lng, lat]
-    zoom: 7, // starting zoom
+    zoom: 11, // starting zoom
   });
 
-  // Initialize the GeolocateControl
+  // Add geolocate control to the map.
+  // Add geolocate control to the map.
   const geolocateControl = new mapboxgl.GeolocateControl({
     positionOptions: {
       enableHighAccuracy: true,
     },
+    // When active the map will receive updates to the device's location as it changes.
     trackUserLocation: true,
+    // Draw an arrow next to the location dot to indicate which direction the device is heading.
     showUserHeading: true,
   });
-
-  // Add the GeolocateControl to the map
   map.addControl(geolocateControl);
 
-  // Automatically trigger the geolocation process when the map loads
   map.on("load", function () {
-    geolocateControl.trigger(); // This triggers geolocation immediately after the map loads
-  });
-
-  // Function to handle fetching the closest company and other location-based updates
-  function fetchClosestCompanyAndStartUpdates(position) {
-    const userCoords = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude,
-    };
-    findClosestCompany(userCoords);
-  }
-
-  // Add an event listener to the GeolocateControl
-  geolocateControl.on("geolocate", function (position) {
-    fetchClosestCompanyAndStartUpdates(position);
+    // Trigger current location when map is loaded
+    geolocateControl.trigger();
   });
 
   let currentMarkers = []; // Store current markers for easy removal
@@ -493,6 +480,7 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchClosestCompanyAndStartUpdates();
   // writeFloorsDataToFirestore();
 });
+
 
 
 
