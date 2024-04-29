@@ -199,20 +199,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to populate floor dropdown with available options
-  function populateFloorDropdown(floorsData, companyName, selectedFloorIndex) {
+  function populateFloorDropdown(floorsData, companyName) {
     const floorSelect = document.getElementById("floor-select");
-    floorSelect.innerHTML = "";
+    floorSelect.innerHTML = ""; // Clear existing options
 
     floorsData.forEach((floorData, index) => {
       const option = document.createElement("option");
-      option.value = index;
+      option.value = index; // The index in the floorsData array
       option.textContent = `Floor ${floorData.floor}`;
-      option.dataset.companyName = companyName;
+      option.dataset.companyName = companyName; // Store the company document ID
       floorSelect.appendChild(option);
     });
-
-    // Maintain the selected floor index
-    floorSelect.value = selectedFloorIndex;
   }
 
   // Function to start location updates for the selected floor
@@ -496,6 +493,7 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchClosestCompanyAndStartUpdates();
   // writeFloorsDataToFirestore();
 });
+
 
 
 
