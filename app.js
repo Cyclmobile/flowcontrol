@@ -82,18 +82,36 @@ document.addEventListener("DOMContentLoaded", function () {
     zoom: 11, // starting zoom
   });
 
-  // Add geolocate control to the map.
-  map.addControl(
-    new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      // When active the map will receive updates to the device's location as it changes.
-      trackUserLocation: true,
-      // Draw an arrow next to the location dot to indicate which direction the device is heading.
-      showUserHeading: true,
-    })
-  );
+  // Initialize the GeolocateControl
+  const geolocateControl = new mapboxgl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true,
+    },
+    trackUserLocation: true,
+    showUserHeading: true,
+  });
+
+  // Add the GeolocateControl to the map
+  map.addControl(geolocateControl);
+
+  // Automatically trigger the geolocation process when the map loads
+  map.on("load", function () {
+    geolocateControl.trigger(); // This triggers geolocation immediately after the map loads
+  });
+
+  // Function to handle fetching the closest company and other location-based updates
+  function fetchClosestCompanyAndStartUpdates(position) {
+    const userCoords = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude,
+    };
+    findClosestCompany(userCoords);
+  }
+
+  // Add an event listener to the GeolocateControl
+  geolocateControl.on("geolocate", function (position) {
+    fetchClosestCompanyAndStartUpdates(position);
+  });
 
   let currentMarkers = []; // Store current markers for easy removal
 
@@ -475,6 +493,7 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchClosestCompanyAndStartUpdates();
   // writeFloorsDataToFirestore();
 });
+
 
 
 
