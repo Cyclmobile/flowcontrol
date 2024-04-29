@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
     style: "mapbox://styles/mapbox/streets-v12", // style URL
     center: [9.645873501926303, 55.643828986581525], // starting center in [lng, lat]
-    zoom: 11, // starting zoom
+    zoom: 7, // starting zoom
   });
 
   // Initialize the GeolocateControl
@@ -199,17 +199,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Function to populate floor dropdown with available options
-  function populateFloorDropdown(floorsData, companyName) {
+  function populateFloorDropdown(floorsData, companyName, selectedFloorIndex) {
     const floorSelect = document.getElementById("floor-select");
-    floorSelect.innerHTML = ""; // Clear existing options
+    floorSelect.innerHTML = "";
 
     floorsData.forEach((floorData, index) => {
       const option = document.createElement("option");
-      option.value = index; // The index in the floorsData array
+      option.value = index;
       option.textContent = `Floor ${floorData.floor}`;
-      option.dataset.companyName = companyName; // Store the company document ID
+      option.dataset.companyName = companyName;
       floorSelect.appendChild(option);
     });
+
+    // Maintain the selected floor index
+    floorSelect.value = selectedFloorIndex;
   }
 
   // Function to start location updates for the selected floor
@@ -493,6 +496,7 @@ document.addEventListener("DOMContentLoaded", function () {
   fetchClosestCompanyAndStartUpdates();
   // writeFloorsDataToFirestore();
 });
+
 
 
 
