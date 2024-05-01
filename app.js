@@ -105,11 +105,19 @@ document.addEventListener("DOMContentLoaded", function () {
   function addMarkersForFloor(areas, map) {
     removeCurrentMarkers(); // Clear existing markers before adding new ones
     areas.forEach((area) => {
-      const marker = new mapboxgl.Marker()
+      // Create a custom DOM element for the marker
+      var el = document.createElement("div");
+      el.innerHTML = `
+      <div class="marker-icon" style="background-image: url('/mywaymarker.png');"></div>
+      <div class="marker-label">${area.name}</div>
+    `;
+
+      const marker = new mapboxgl.Marker(el)
         .setLngLat([area.coords.lng, area.coords.lat])
         .setPopup(
-          new mapboxgl.Popup({ offset: 25 }) // Add popups
-            .setText(area.name + (area.ads ? ` - ${area.ads.message}` : ""))
+          new mapboxgl.Popup({ offset: 25 }).setText(
+            area.name + (area.ads ? ` - ${area.ads.message}` : "")
+          )
         )
         .addTo(map);
       currentMarkers.push(marker); // Store marker reference for removal later
@@ -377,27 +385,21 @@ document.addEventListener("DOMContentLoaded", function () {
         "traffic-light " + (index === 0 ? "main" : "smaller");
       const colorAndStatus = getColorAndStatus(area.distance, area.radius);
       lightElement.innerHTML = `
-        <div class="light" style="background-color: ${colorAndStatus.color};"></div>
-        <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
-        `;
+    <div class="light" style="background-color: ${colorAndStatus.color};"></div>
+    <span class="light-label">${area.name}: ${colorAndStatus.status}</span>
+  `;
 
       // Append the first element as the main light, others as smaller lights
       if (index === 0) {
         mainLightContainer.appendChild(lightElement);
       } else {
+        if (index === 1) {
+          // Add a separator before adding other lights to visually distinguish
+          const separator = document.createElement("div");
+          separator.className = "separator";
+          otherLightsContainer.appendChild(separator);
+        }
         otherLightsContainer.appendChild(lightElement);
-      }
-
-      // Display ads if applicable and within radius
-      if (area.ads && area.distance <= area.radius) {
-        const adElement = document.createElement("div");
-        adElement.className = "ad";
-        adElement.innerHTML =
-          `<p>${area.ads.message}</p>` +
-          (area.ads.image
-            ? `<img src="${area.ads.image}" alt="Ad image">`
-            : "");
-        adsContainer.appendChild(adElement);
       }
     });
 
@@ -448,7 +450,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Event listener for when a floor is selected
   document
     .getElementById("floor-select")
-    .addEventListener("change", function () {
+    .addEventListener("change", function (e) {
       const floorNumber = parseInt(this.value, 10);
       const companyName = this.options[this.selectedIndex].dataset.companyName;
       startLocationUpdates(floorNumber, companyName); // Existing function to update UI
