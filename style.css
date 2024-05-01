@@ -106,7 +106,7 @@ html {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background-color: #757575;
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -187,6 +187,44 @@ html {
   overflow: hidden;
   margin-top: 10px;
 }
+
+.custom-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background-color: #fff;
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+  text-align: center;
+  z-index: -1;
+}
+
+.marker-icon {
+  width: 31px;
+  height: 31px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-bottom: 5px;
+  z-index: -1;
+}
+
+.marker-label,
+.marker-distance {
+  font-size: 14px;
+  color: #333;
+  z-index: -1;
+}
+.mapboxgl-user-location-dot {
+  z-index: 1000;
+}
+.mapboxgl-marker-anchor-center {
+  z-index: 1000;
+}
+
 
 
 
