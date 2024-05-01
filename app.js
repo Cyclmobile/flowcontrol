@@ -83,17 +83,22 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Add geolocate control to the map.
-  map.addControl(
-    new mapboxgl.GeolocateControl({
-      positionOptions: {
-        enableHighAccuracy: true,
-      },
-      // When active the map will receive updates to the device's location as it changes.
-      trackUserLocation: true,
-      // Draw an arrow next to the location dot to indicate which direction the device is heading.
-      showUserHeading: true,
-    })
-  );
+  // Add geolocate control to the map.
+  const geolocateControl = new mapboxgl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true,
+    },
+    // When active the map will receive updates to the device's location as it changes.
+    trackUserLocation: true,
+    // Draw an arrow next to the location dot to indicate which direction the device is heading.
+    showUserHeading: true,
+  });
+  map.addControl(geolocateControl);
+
+  map.on("load", function () {
+    // Trigger current location when map is loaded
+    geolocateControl.trigger();
+  });
 
   let currentMarkers = []; // Store current markers for easy removal
 
@@ -443,7 +448,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Event listener for when a floor is selected
   document
     .getElementById("floor-select")
-    .addEventListener("change", function () {
+    .addEventListener("change", function (e) {
       const floorNumber = parseInt(this.value, 10);
       const companyName = this.options[this.selectedIndex].dataset.companyName;
       startLocationUpdates(floorNumber, companyName); // Existing function to update UI
